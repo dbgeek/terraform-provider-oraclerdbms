@@ -1,5 +1,11 @@
 # Terraform oraclerdbms provider changelog
 
+## 0.1.0 (October 18, 2018)
+
+NOTES:
+
+uppdating go vendoring
+
 ## 0.1.0 (October 15, 2018)
 
 NOTES:
