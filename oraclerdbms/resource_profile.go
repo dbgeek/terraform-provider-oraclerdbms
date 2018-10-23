@@ -49,13 +49,6 @@ func resourceOracleRdbmsDeleteProfile(d *schema.ResourceData, meta interface{}) 
 
 func resourceOracleRdbmsReadProfile(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsReadProfile")
-	/*client := meta.(*providerConfiguration).Client
-	profile, err := client.ProfileService.ReadProfile(d.Id())
-	if err != nil {
-		log.Fatal("Read Profile Error")
-		d.SetId("")
-	}
-	d.Set("profile", profile["PROFILE"])*/
 	return nil
 }
 

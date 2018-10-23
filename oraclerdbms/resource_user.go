@@ -20,7 +20,7 @@ func resourceUser() *schema.Resource {
 				ForceNew: true,
 				StateFunc: func(val interface{}) string {
 					return strings.ToUpper(val.(string))
-			},
+				},
 			},
 			"password": &schema.Schema{
 				Type:      schema.TypeString,
@@ -33,7 +33,7 @@ func resourceUser() *schema.Resource {
 				Optional: true,
 				StateFunc: func(val interface{}) string {
 					return strings.ToUpper(val.(string))
-			},
+				},
 			},
 			"default_tablespace": &schema.Schema{
 				Type:     schema.TypeString,

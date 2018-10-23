@@ -26,8 +26,8 @@ resource "oraclerdbms_profile" "test1" {
 }
 
 resource "oraclerdbms_profile_limit" "test1" {
-	limit = "IDLE_TIME"
+	resource_name = "IDLE_TIME"
 	value = "33"
-	profile_id = "${oraclerdbms_profile.test1.id}"
+	profile = "${oraclerdbms_profile.test1.id}"
 }
 `

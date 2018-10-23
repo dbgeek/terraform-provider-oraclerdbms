@@ -34,7 +34,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:bc2410ad4d4fb637698c3c71d514cdf38a43a8c5f83c3c415af1925e426abdc5"
+  digest = "1:464cd84afa66ca91d95e2ef8beab1a4b7c4c2415185909e3d3f74625886d2dda"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -54,6 +54,7 @@
     "aws/request",
     "aws/session",
     "aws/signer/v4",
+    "internal/ini",
     "internal/s3err",
     "internal/sdkio",
     "internal/sdkrand",
@@ -71,8 +72,8 @@
     "service/sts",
   ]
   pruneopts = "UT"
-  revision = "bf8067ceb6e7f51e150c218972dccfeeed892b85"
-  version = "v1.15.54"
+  revision = "58fbceeaf77b78c7aa2d44b7a93431eba0468917"
+  version = "v1.15.60"
 
 [[projects]]
   branch = "master"
@@ -107,12 +108,12 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:be630d1669bde91a1cc94778c1ee338e8eac93f7e82265cf9a11462e04825407"
+  digest = "1:05c73f97c9aef86e97d6a500ef43b1a99534d1a78f6d6b88924e38a1cbbaf978"
   name = "github.com/dbgeek/terraform-oracle-rdbms-helper"
   packages = ["oraclehelper"]
   pruneopts = "UT"
-  revision = "2e240d8f7b6ce588e4e0aa84c12bc1a85d35dabf"
-  version = "v0.1.0"
+  revision = "dce96a91cede51e9ba5c9c9f4aceba404bffbe36"
+  version = "v0.2.0"
 
 [[projects]]
   digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
@@ -121,14 +122,6 @@
   pruneopts = "UT"
   revision = "5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4"
   version = "v1.7.0"
-
-[[projects]]
-  digest = "1:15e27372d379b45b18ac917b9dafc45c45485239490ece18cca97a12f9591146"
-  name = "github.com/go-ini/ini"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "9c8236e659b76e87bf02044d06fde8683008ff3e"
-  version = "v1.39.0"
 
 [[projects]]
   digest = "1:4c0989ca0bcd10799064318923b9bc2db6b4d6338dd75f3f2d86c3511aaaf5cf"
@@ -274,7 +267,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:0c4a8336a224a93b56033df3723e411cc4d7ad4da21a66d39a0edf794ed43307"
+  digest = "1:384d072f07554b99d2d823d4a4f01b1dbc52055f9b7af59f9a16ffa9f36f60c5"
   name = "github.com/hashicorp/terraform"
   packages = [
     "config",
@@ -289,6 +282,8 @@
     "helper/logging",
     "helper/resource",
     "helper/schema",
+    "helper/structure",
+    "helper/validation",
     "httpclient",
     "moduledeps",
     "plugin",
@@ -304,8 +299,8 @@
     "version",
   ]
   pruneopts = "UT"
-  revision = "6dfc4d748de9cda23835bc5704307ed45e839622"
-  version = "v0.11.8"
+  revision = "4e44b41c8bc1b533d14f9939690adf09e3d2a2be"
+  version = "v0.11.9"
 
 [[projects]]
   branch = "master"
@@ -340,11 +335,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:006c7ac73e437d5f76e31b9d5bcded64c30b004f2b81f6f15b0ec112d55cb497"
+  digest = "1:54dfebb0529572a744dcb5bc1f33b7082a559189a490413bdd09e2fc74eb23f2"
   name = "github.com/mattn/go-oci8"
   packages = ["."]
   pruneopts = "UT"
-  revision = "0955bc9f194fc150e795489cf1840010b81ad0bd"
+  revision = "e3e58f4cc7971587a58f2610a3719f177d77cc65"
 
 [[projects]]
   digest = "1:dac0667a3fcdd4102a5da07abeddc89eb2f125b1e91af1ea9544c80eaff19c9a"
@@ -419,7 +414,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:963772912b1d71f582a78a3f55a0e83bbd88777335a07a57cfbe0f01df2df06b"
+  digest = "1:2ef797d5fe5b23bdcc75655d4a2a89577cdb61ad14698845bcc12a2d133c9f8f"
   name = "github.com/posener/complete"
   packages = [
     ".",
@@ -428,8 +423,8 @@
     "match",
   ]
   pruneopts = "UT"
-  revision = "dcda3199365ca2a5f24aea4c42aa56f6a197d117"
-  version = "v1.1.2"
+  revision = "ffc2cf5e958af5ac4156a886153c7cadd24a521a"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:4aeb3860275fa1fd60cccfb5a6ef85da438bf17402e1e84412ade4d4b55066a0"
@@ -446,7 +441,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ecc7fbde3d397eb26aa33028e133ca762f7da31f1c9a7ca86867761282913bbe"
+  digest = "1:e77fdd77613344e716e0ce6c7cc28d8f6ebf02d938fad00db4b5fa73cb3589fb"
   name = "github.com/zclconf/go-cty"
   packages = [
     "cty",
@@ -458,7 +453,7 @@
     "cty/set",
   ]
   pruneopts = "UT"
-  revision = "1f835aab79c29c842f2e8624541053e8ff618cd8"
+  revision = "01c5aba823a6c91fe3bc287fd6e493ca717a64b8"
 
 [[projects]]
   branch = "master"
@@ -494,15 +489,15 @@
     "trace",
   ]
   pruneopts = "UT"
-  revision = "49bb7cea24b1df9410e1712aa6433dae904ff66a"
+  revision = "04a2e542c03f1d053ab3e4d6e5abcd4b66e2be8e"
 
 [[projects]]
   branch = "master"
-  digest = "1:0a40b0bdd57a93e741d8557465be3a2edeec408e9b6399586ad65bbe8e355796"
+  digest = "1:c5791551cb1ebd8cd399edad5bc32805661a5c0340515110dd7d5ab0b0508efc"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "fa43e7bc11baaae89f3f902b2b4d832b68234844"
+  revision = "8a28ead16f52c8aaeffbf79239b251dfdf6c4f96"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -533,7 +528,7 @@
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
   pruneopts = "UT"
-  revision = "af9cb2a35e7f169ec875002c1829c9b315cddc04"
+  revision = "94acd270e44e65579b9ee3cdab25034d33fed608"
 
 [[projects]]
   digest = "1:1b6d2676ea895d33cbd1999c75dfc8e25b103c754ccfc66dc06ae845ce3a47bc"
@@ -580,6 +575,7 @@
     "github.com/hashicorp/terraform/helper/hashcode",
     "github.com/hashicorp/terraform/helper/resource",
     "github.com/hashicorp/terraform/helper/schema",
+    "github.com/hashicorp/terraform/helper/validation",
     "github.com/hashicorp/terraform/plugin",
     "github.com/hashicorp/terraform/terraform",
   ]

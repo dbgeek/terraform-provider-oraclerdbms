@@ -39,7 +39,7 @@ func resourceGrantObjectPrivilege() *schema.Resource {
 				ForceNew: true,
 				StateFunc: func(val interface{}) string {
 					return strings.ToUpper(val.(string))
-			},
+				},
 			},
 			"privilege": &schema.Schema{
 				Type: schema.TypeSet,
