@@ -21,9 +21,9 @@ SELECT
 	tp.inherited
 FROM
 	dba_tab_privs tp
-WHERE tp.grantee = :1
-AND tp.owner = :2
-AND tp.table_name = :3
+WHERE tp.grantee = UPPER(:1)
+AND tp.owner = UPPER(:2)
+AND tp.table_name = UPPER(:3)
 `
 	querySysPrivs = `
 SELECT
@@ -34,7 +34,7 @@ SELECT
 	sp.inherited
 FROM
 	dba_sys_privs sp
-WHERE sp.grantee = :1
+WHERE sp.grantee = UPPER(:1)
 `
 	queryRolePrivs = `
 SELECT
@@ -47,7 +47,7 @@ SELECT
 	rp.inherited
 FROM
 	dba_role_privs rp
-WHERE rp.grantee = :1
+WHERE rp.grantee = UPPER(:1)
 `
 )
 

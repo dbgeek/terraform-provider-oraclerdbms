@@ -14,7 +14,7 @@ SELECT
 	u.profile
 FROM
 	dba_users u
-WHERE u.username = :1
+WHERE u.username = UPPER(:1)
 `
 )
 

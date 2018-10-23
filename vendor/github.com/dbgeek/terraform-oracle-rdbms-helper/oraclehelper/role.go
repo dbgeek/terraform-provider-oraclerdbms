@@ -15,7 +15,7 @@ SELECT
 	r.oracle_maintained
 FROM
 	dba_roles r
-WHERE r.role = :1
+WHERE r.role = UPPER(:1)
 `
 )
 
