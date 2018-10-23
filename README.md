@@ -23,27 +23,59 @@ Requirements
 Usage
 ---------------------
 
-```
-# For example, restrict template version in 0.1.x
-provider "template" {
+```terraform
+# For example, restrict oraclerdbms version in 0.1.x
+provider "oraclerdbms" {
   version = "~> 0.1"
+}
+
+resource "oraclerdbms_profile" "test" {
+    profile = "TEST01"
+}
+
+resource "oraclerdbms_profile_limit" "test1" {
+  resource_name = "IDLE_TIME"
+  value         = "33"
+  profile       = "${oraclerdbms_profile.test.id}"
+
+}
+
+resource "oraclerdbms_user" "testuser" {
+  username            = "TESTUSER"
+  password            = "change_on_install"
+  default_tablespace  = "USERS"
+  profile             = "${oraclerdbms_profile.test.id}
+}
+
+resource "oraclerdbms_grant_system_privilege" "grantsysprivs" {
+  grantee   = "${oraclerdbms_user.testuser.id}"
+  privilege = "CREATE SESSION"
+}
+
+resource "oraclerdbms_role" "roletest" {
+  role = "TESTROLE"
+}
+
+resource "oraclerdbms_grant_role_privilege" "grantroleprivs" {
+  grantee = "${oraclerdbms_user.testuser.id}"
+  role    = "${oraclerdbms_role.roletest.id}"
 }
 ```
 
 Building The Provider
 ---------------------
 
-Clone repository to: `$GOPATH/src/github.com/terraform-providers/terraform-provider-template`
+Clone repository to: `$GOPATH/src/github.com/terraform-providers/terraform-provider-oraclerdbms`
 
 ```sh
 $ mkdir -p $GOPATH/src/github.com/terraform-providers; cd $GOPATH/src/github.com/terraform-providers
-$ git clone git@github.com:terraform-providers/terraform-provider-template
+$ git clone git@github.com:terraform-providers/terraform-provider-oraclerdbms
 ```
 
 Enter the provider directory and build the provider
 
 ```sh
-$ cd $GOPATH/src/github.com/terraform-providers/terraform-provider-template
+$ cd $GOPATH/src/github.com/terraform-providers/terraform-provider-oraclerdbms
 $ make build
 ```
 
@@ -61,7 +93,7 @@ To compile the provider, run `make build`. This will build the provider and put 
 ```sh
 $ make bin
 ...
-$ $GOPATH/bin/terraform-provider-template
+$ $GOPATH/bin/terraform-provider-oraclerdbms
 ...
 ```
 

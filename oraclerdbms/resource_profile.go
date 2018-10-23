@@ -4,6 +4,7 @@ import (
 	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
 	"github.com/hashicorp/terraform/helper/schema"
 	"log"
+	"strings"
 )
 
 func resourceProfile() *schema.Resource {
@@ -16,15 +17,10 @@ func resourceProfile() *schema.Resource {
 			"profile": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-			}, /*
-				"resource": &schema.Schema{
-					Type:     schema.TypeString,
-					Required: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
 				},
-				"limit": &schema.Schema{
-					Type:     schema.TypeString,
-					Required: true,
-				},*/
+			},
 		},
 	}
 }
@@ -53,13 +49,6 @@ func resourceOracleRdbmsDeleteProfile(d *schema.ResourceData, meta interface{}) 
 
 func resourceOracleRdbmsReadProfile(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsReadProfile")
-	/*client := meta.(*providerConfiguration).Client
-	profile, err := client.ProfileService.ReadProfile(d.Id())
-	if err != nil {
-		log.Fatal("Read Profile Error")
-		d.SetId("")
-	}
-	d.Set("profile", profile["PROFILE"])*/
 	return nil
 }
 

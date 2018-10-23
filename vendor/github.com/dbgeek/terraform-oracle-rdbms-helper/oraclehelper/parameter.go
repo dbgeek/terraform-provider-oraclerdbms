@@ -29,11 +29,13 @@ WHERE name = :1
 )
 
 type (
+
 	//ResourceParameter ..
 	ResourceParameter struct {
 		Name    string
 		Value   string
 		Comment string
+		Scope   string
 	}
 	parameter struct {
 		Num                  sql.NullString
@@ -87,9 +89,11 @@ func (p *parameterService) SetParameter(tf ResourceParameter) error {
 	if tf.Comment != "" {
 		sqlCommand += fmt.Sprintf(" comment='%s'", tf.Comment)
 	}
-
-	sqlCommand += " scope=both"
-
+	log.Printf("[INFO] sqlCommand: %s \n", sqlCommand)
+	if tf.Scope != "" {
+		sqlCommand += fmt.Sprintf(" scope=%s", tf.Scope)
+		log.Printf("[INFO] sqlCommand: %s \n", sqlCommand)
+	}
 	log.Printf("[DEBUG] sqlcommand: %s", sqlCommand)
 
 	_, err := p.client.DBClient.Exec(sqlCommand)

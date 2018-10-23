@@ -3,7 +3,9 @@ package oraclerdbms
 import (
 	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform/helper/validation"
 	"log"
+	"strings"
 )
 
 func resourceParameter() *schema.Resource {
@@ -26,6 +28,19 @@ func resourceParameter() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"scope": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+				},
+				ValidateFunc: validation.StringInSlice([]string{
+					"memory",
+					"spfile",
+					"both",
+				}, true),
+				Default: "both",
+			},
 		},
 	}
 }
@@ -39,6 +54,7 @@ func resourceOracleRdbmsCreateParameter(d *schema.ResourceData, meta interface{}
 	}
 	resourceParameter.Name = d.Get("name").(string)
 	resourceParameter.Value = d.Get("value").(string)
+	resourceParameter.Scope = d.Get("scope").(string)
 
 	client := meta.(*providerConfiguration).Client
 
@@ -81,6 +97,7 @@ func resourceOracleRdbmsReadParameter(d *schema.ResourceData, meta interface{}) 
 	}
 	d.Set("value", parm.Value)
 	d.Set("name", parm.Name)
+	//d.Set("")
 
 	log.Printf("[DEBUG] name: %s, value: %s, defaultvalue: %s \n", parm.Name, parm.Value, parm.DefaultValue)
 

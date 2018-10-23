@@ -9,12 +9,13 @@ import "C"
 // noPkgConfig is a Go tag for disabling using pkg-config and using environmental settings like CGO_CFLAGS and CGO_LDFLAGS instead
 
 import (
+	"bytes"
 	"database/sql/driver"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -137,7 +138,7 @@ func (tx *OCI8Tx) Commit() error {
 		tx.conn.svc,
 		tx.conn.err,
 		0); rv != C.OCI_SUCCESS {
-		return ociGetError(rv, tx.conn.err)
+		return getError(rv, tx.conn.err)
 	}
 	return nil
 }
@@ -149,7 +150,7 @@ func (tx *OCI8Tx) Rollback() error {
 		tx.conn.svc,
 		tx.conn.err,
 		0); rv != C.OCI_SUCCESS {
-		return ociGetError(rv, tx.conn.err)
+		return getError(rv, tx.conn.err)
 	}
 	return nil
 }
@@ -255,7 +256,7 @@ func (oci8Driver *OCI8DriverStruct) Open(dsnString string) (connection driver.Co
 			C.OCI_ATTR_SERVER,
 			conn.err,
 		); rv != C.OCI_SUCCESS {
-			err = ociGetError(rv, conn.err)
+			err = getError(rv, conn.err)
 			C.OCIHandleFree(unsafe.Pointer(conn.svc), C.OCI_HTYPE_SVCCTX)
 			C.OCIHandleFree(unsafe.Pointer(conn.srv), C.OCI_HTYPE_SERVER)
 			C.OCIHandleFree(unsafe.Pointer(conn.err), C.OCI_HTYPE_ERROR)
@@ -290,7 +291,7 @@ func (oci8Driver *OCI8DriverStruct) Open(dsnString string) (connection driver.Co
 				C.OCI_ATTR_USERNAME,
 				conn.err,
 			); rv != C.OCI_SUCCESS {
-				err = ociGetError(rv, conn.err)
+				err = getError(rv, conn.err)
 				C.OCIHandleFree(unsafe.Pointer(conn.usrSession), C.OCI_HTYPE_SESSION)
 				C.OCIHandleFree(unsafe.Pointer(conn.svc), C.OCI_HTYPE_SVCCTX)
 				C.OCIHandleFree(unsafe.Pointer(conn.srv), C.OCI_HTYPE_SERVER)
@@ -308,7 +309,7 @@ func (oci8Driver *OCI8DriverStruct) Open(dsnString string) (connection driver.Co
 				C.OCI_ATTR_PASSWORD,
 				conn.err,
 			); rv != C.OCI_SUCCESS {
-				err = ociGetError(rv, conn.err)
+				err = getError(rv, conn.err)
 				C.OCIHandleFree(unsafe.Pointer(conn.usrSession), C.OCI_HTYPE_SESSION)
 				C.OCIHandleFree(unsafe.Pointer(conn.svc), C.OCI_HTYPE_SVCCTX)
 				C.OCIHandleFree(unsafe.Pointer(conn.srv), C.OCI_HTYPE_SERVER)
@@ -343,7 +344,7 @@ func (oci8Driver *OCI8DriverStruct) Open(dsnString string) (connection driver.Co
 			C.OCI_ATTR_SESSION,
 			conn.err,
 		); rv != C.OCI_SUCCESS {
-			err = ociGetError(rv, conn.err)
+			err = getError(rv, conn.err)
 			C.OCIHandleFree(unsafe.Pointer(conn.usrSession), C.OCI_HTYPE_SESSION)
 			C.OCIHandleFree(unsafe.Pointer(conn.svc), C.OCI_HTYPE_SVCCTX)
 			C.OCIHandleFree(unsafe.Pointer(conn.srv), C.OCI_HTYPE_SERVER)
@@ -363,7 +364,7 @@ func (oci8Driver *OCI8DriverStruct) Open(dsnString string) (connection driver.Co
 			(*C.OraText)(unsafe.Pointer(phost)),
 			C.ub4(len(dsn.Connect)),
 		); rv.rv != C.OCI_SUCCESS && rv.rv != C.OCI_SUCCESS_WITH_INFO {
-			err = ociGetError(rv.rv, conn.err)
+			err = getError(rv.rv, conn.err)
 			C.OCIHandleFree(unsafe.Pointer(conn.err), C.OCI_HTYPE_ERROR)
 			C.OCIHandleFree(unsafe.Pointer(conn.env), C.OCI_HTYPE_ENV)
 			return
@@ -385,40 +386,8 @@ func (oci8Driver *OCI8DriverStruct) Open(dsnString string) (connection driver.Co
 	return
 }
 
-func freeBoundParameters(boundParameters []oci8bind) {
-	for _, col := range boundParameters {
-		if col.pbuf != nil {
-			switch col.kind {
-			case C.SQLT_CLOB, C.SQLT_BLOB:
-				freeDecriptor(col.pbuf, C.OCI_DTYPE_LOB)
-			case C.SQLT_TIMESTAMP:
-				freeDecriptor(col.pbuf, C.OCI_DTYPE_TIMESTAMP)
-			case C.SQLT_TIMESTAMP_TZ:
-				freeDecriptor(col.pbuf, C.OCI_DTYPE_TIMESTAMP_TZ)
-			case C.SQLT_TIMESTAMP_LTZ:
-				freeDecriptor(col.pbuf, C.OCI_DTYPE_TIMESTAMP_LTZ)
-			case C.SQLT_INTERVAL_DS:
-				freeDecriptor(col.pbuf, C.OCI_DTYPE_INTERVAL_DS)
-			case C.SQLT_INTERVAL_YM:
-				freeDecriptor(col.pbuf, C.OCI_DTYPE_INTERVAL_YM)
-			default:
-				C.free(col.pbuf)
-			}
-			col.pbuf = nil
-		}
-	}
-}
-
-func getInt64(p unsafe.Pointer) int64 {
-	return int64(*(*C.sb8)(p))
-}
-
-func getUint64(p unsafe.Pointer) uint64 {
-	return uint64(*(*C.sb8)(p))
-}
-
-func outputBoundParameters(boundParameters []oci8bind) {
-	for _, col := range boundParameters {
+func outputBoundParameters(boundParameters []oci8bind) error {
+	for i, col := range boundParameters {
 		if col.pbuf != nil {
 			switch v := col.out.(type) {
 			case *string:
@@ -445,27 +414,25 @@ func outputBoundParameters(boundParameters []oci8bind) {
 				*v = uint16(getUint64(col.pbuf))
 			case *uint8:
 				*v = uint8(getUint64(col.pbuf))
+			case *uintptr:
+				*v = uintptr(getUint64(col.pbuf))
 
 			case *float64:
-
-				buf := (*[1 << 30]byte)(col.pbuf)[0:8]
-				f := uint64(buf[7])
-				f |= uint64(buf[6]) << 8
-				f |= uint64(buf[5]) << 16
-				f |= uint64(buf[4]) << 24
-				f |= uint64(buf[3]) << 32
-				f |= uint64(buf[2]) << 40
-				f |= uint64(buf[1]) << 48
-				f |= uint64(buf[0]) << 56
-
-				// Don't know why bits are inverted that way, but it works
-				if buf[0]&0x80 == 0 {
-					f ^= 0xffffffffffffffff
-				} else {
-					f &= 0x7fffffffffffffff
+				buf := (*[8]byte)(col.pbuf)[0:8]
+				var data float64
+				err := binary.Read(bytes.NewReader(buf), binary.LittleEndian, &data)
+				if err != nil {
+					return fmt.Errorf("binary read for column %v - error: %v", i, err)
 				}
-
-				*v = math.Float64frombits(f)
+				*v = data
+			case *float32:
+				buf := (*[8]byte)(col.pbuf)[0:8]
+				var data float32
+				err := binary.Read(bytes.NewReader(buf), binary.LittleEndian, &data)
+				if err != nil {
+					return fmt.Errorf("binary read for column %v - error: %v", i, err)
+				}
+				*v = data
 
 			case *bool:
 				buf := (*[1 << 30]byte)(col.pbuf)[0:1]
@@ -473,6 +440,8 @@ func outputBoundParameters(boundParameters []oci8bind) {
 			}
 		}
 	}
+
+	return nil
 }
 
 // GetLastInsertId retuns last inserted ID
@@ -488,81 +457,6 @@ func (r *OCI8Result) LastInsertId() (int64, error) {
 // RowsAffected returns rows affected
 func (r *OCI8Result) RowsAffected() (int64, error) {
 	return r.n, r.errn
-}
-
-// freeDecriptor calles C OCIDescriptorFree
-func freeDecriptor(p unsafe.Pointer, dtype C.ub4) {
-	tptr := *(*unsafe.Pointer)(p)
-	C.OCIDescriptorFree(unsafe.Pointer(tptr), dtype)
-}
-
-// ociGetErrorS gets error.
-// Also calls isBadConnection to check if bad connection error
-func ociGetErrorS(err *C.OCIError) error {
-	rv := C.WrapOCIErrorGet(err)
-	s := C.GoString(&rv.err[0])
-	if isBadConnection(s) {
-		return driver.ErrBadConn
-	}
-	return errors.New(s)
-}
-
-// isBadConnection checks the error string for ORA errors that would mean the connection is bad
-func isBadConnection(error string) bool {
-	if len(error) < 9 || error[0:4] != "ORA-" {
-		// if error is less than 9 and is not an ORA error
-		return false
-	}
-	// only check number part, ORA is already checked
-	switch error[4:9] {
-	/*
-		bad connection errors:
-		ORA-00028: your session has been killed
-		ORA-01012: Not logged on
-		ORA-01033: ORACLE initialization or shutdown in progress
-		ORA-01034: ORACLE not available
-		ORA-01089: immediate shutdown in progress - no operations are permitted
-		ORA-03113: end-of-file on communication channel
-		ORA-03114: Not Connected to Oracle
-		ORA-03135: connection lost contact
-		ORA-12528: TNS:listener: all appropriate instances are blocking new connections
-		ORA-12537: TNS:connection closed
-	*/
-	case "00028", "01012", "01033", "01034", "01089", "03113", "03114", "03135", "12528", "12537":
-		// bad connection
-		return true
-	}
-	return false
-}
-
-func ociGetError(rv C.sword, err *C.OCIError) error {
-	switch rv {
-	case C.OCI_INVALID_HANDLE:
-		return errors.New("OCI_INVALID_HANDLE")
-	case C.OCI_SUCCESS_WITH_INFO:
-		return errors.New("OCI_SUCCESS_WITH_INFO")
-	case C.OCI_RESERVED_FOR_INT_USE:
-		return errors.New("OCI_RESERVED_FOR_INT_USE")
-	case C.OCI_NO_DATA:
-		return errors.New("OCI_NO_DATA")
-	case C.OCI_NEED_DATA:
-		return errors.New("OCI_NEED_DATA")
-	case C.OCI_STILL_EXECUTING:
-		return errors.New("OCI_STILL_EXECUTING")
-	case C.OCI_SUCCESS:
-		panic("ociGetError called with no error")
-	case C.OCI_ERROR:
-		return ociGetErrorS(err)
-	}
-	return fmt.Errorf("oracle return error code %d", rv)
-}
-
-// CByte comverts byte slice to C char
-func CByte(b []byte) *C.char {
-	p := C.malloc(C.size_t(len(b)))
-	pp := (*[1 << 30]byte)(p)
-	copy(pp[:], b)
-	return (*C.char)(p)
 }
 
 // converts "?" characters to  :1, :2, ... :n

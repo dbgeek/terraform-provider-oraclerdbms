@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
 	"github.com/hashicorp/terraform/helper/hashcode"
@@ -21,11 +22,17 @@ func resourceGrantSystemPrivilege() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+				},
 			},
 			"privilege": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+				},
 			},
 		},
 	}

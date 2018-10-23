@@ -17,7 +17,7 @@ SELECT
 	implicit
 FROM
 	dba_profiles
-WHERE profile = :1
+WHERE profile = UPPER(:1)
 `
 )
 
