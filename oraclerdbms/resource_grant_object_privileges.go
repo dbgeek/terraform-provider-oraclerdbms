@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
 	"log"
+	"strings"
 )
 
 func resourceGrantObjectPrivilege() *schema.Resource {
@@ -20,16 +21,25 @@ func resourceGrantObjectPrivilege() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+				},
 			},
 			"owner": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+				},
 			},
 			"object": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+			},
 			},
 			"privilege": &schema.Schema{
 				Type: schema.TypeSet,
@@ -38,6 +48,9 @@ func resourceGrantObjectPrivilege() *schema.Resource {
 				},
 				Required: true,
 				ForceNew: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+				},
 			},
 		},
 	}

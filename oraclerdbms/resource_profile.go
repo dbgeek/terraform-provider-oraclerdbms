@@ -4,6 +4,7 @@ import (
 	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
 	"github.com/hashicorp/terraform/helper/schema"
 	"log"
+	"strings"
 )
 
 func resourceProfile() *schema.Resource {
@@ -16,15 +17,10 @@ func resourceProfile() *schema.Resource {
 			"profile": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
-			}, /*
-				"resource": &schema.Schema{
-					Type:     schema.TypeString,
-					Required: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
 				},
-				"limit": &schema.Schema{
-					Type:     schema.TypeString,
-					Required: true,
-				},*/
+			},
 		},
 	}
 }

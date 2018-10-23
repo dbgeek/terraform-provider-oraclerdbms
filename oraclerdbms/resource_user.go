@@ -4,6 +4,7 @@ import (
 	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
 	"github.com/hashicorp/terraform/helper/schema"
 	"log"
+	"strings"
 )
 
 func resourceUser() *schema.Resource {
@@ -17,6 +18,9 @@ func resourceUser() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+			},
 			},
 			"password": &schema.Schema{
 				Type:      schema.TypeString,
@@ -27,16 +31,25 @@ func resourceUser() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 				Optional: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+			},
 			},
 			"default_tablespace": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 				Optional: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+				},
 			},
 			"temporary_tablespace": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 				Optional: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+				},
 			},
 		},
 	}

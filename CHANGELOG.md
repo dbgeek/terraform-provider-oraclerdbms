@@ -1,6 +1,12 @@
 # Terraform oraclerdbms provider changelog
 
-## 0.1.0 (October 18, 2018)
+## 0.2.0 (October 22, 2018)
+
+NOTES:
+
+### resource_profile_limite
+
+* Store in upercase in the state
 
 NOTES:
 

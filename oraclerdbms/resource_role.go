@@ -3,6 +3,7 @@ package oraclerdbms
 import (
 	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
 	"github.com/hashicorp/terraform/helper/schema"
+	"strings"
 
 	"log"
 )
@@ -18,6 +19,9 @@ func resourceRole() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+				},
 			},
 		},
 	}
