@@ -25,6 +25,25 @@ func TestAccGrantObjPrivs(t *testing.T) {
 		},
 	})
 }
+func TestAccGrantObjPrivs_importBasic(t *testing.T) {
+	resourceName := "oraclerdbms_grant_object_privilege.grantobjtest"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccGrantObjPrivsConfigBasic,
+			},
+
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
 
 const (
 	testAccGrantObjPrivsConfigBasic = `

@@ -13,7 +13,11 @@ func resourceRole() *schema.Resource {
 		Create: resourceOracleRdbmsCreateRole,
 		Delete: resourceOracleRdbmsDeleteRole,
 		Read:   resourceOracleRdbmsReadRole,
-		Update: nil, //resourceOracleRdbmsUpdateRole,
+		Update: nil,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
+
 		Schema: map[string]*schema.Schema{
 			"role": &schema.Schema{
 				Type:     schema.TypeString,
@@ -29,11 +33,11 @@ func resourceRole() *schema.Resource {
 
 func resourceOracleRdbmsCreateRole(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsCreateRole")
-	var resourceRole oraclehelper.ResourceRole
+
 	client := meta.(*providerConfiguration).Client
 
-	if d.Get("role").(string) != "" {
-		resourceRole.Role = d.Get("role").(string)
+	resourceRole := oraclehelper.ResourceRole{
+		Role: d.Get("role").(string),
 	}
 
 	err := client.RoleService.CreateRole(resourceRole)
@@ -47,10 +51,11 @@ func resourceOracleRdbmsCreateRole(d *schema.ResourceData, meta interface{}) err
 
 func resourceOracleRdbmsDeleteRole(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsDeleteRole")
-	var resourceRole oraclehelper.ResourceRole
 	client := meta.(*providerConfiguration).Client
+	resourceRole := oraclehelper.ResourceRole{
+		Role: d.Id(),
+	}
 
-	resourceRole.Role = d.Id()
 	err := client.RoleService.DropRole(resourceRole)
 	if err != nil {
 		d.SetId("")
@@ -60,15 +65,17 @@ func resourceOracleRdbmsDeleteRole(d *schema.ResourceData, meta interface{}) err
 }
 func resourceOracleRdbmsReadRole(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsReadRole")
-	var resourceRole oraclehelper.ResourceRole
 	client := meta.(*providerConfiguration).Client
+	resourceRole := oraclehelper.ResourceRole{
+		Role: d.Id(),
+	}
 
-	resourceRole.Role = d.Id()
-	_, err := client.RoleService.ReadRole(resourceRole)
+	role, err := client.RoleService.ReadRole(resourceRole)
 	if err != nil {
 		d.SetId("")
 		return err
 	}
+	d.Set("role", role.Role)
 	return nil
 }
 func resourceOracleRdbmsUpdateRole(d *schema.ResourceData, meta interface{}) error {

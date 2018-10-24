@@ -12,11 +12,16 @@ func resourceProfile() *schema.Resource {
 		Create: resourceOracleRdbmsCreateProfile,
 		Delete: resourceOracleRdbmsDeleteProfile,
 		Read:   resourceOracleRdbmsReadProfile,
-		Update: resourceOracleRdbmsUpdateProfile,
+		Update: nil,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
+
 		Schema: map[string]*schema.Schema{
 			"profile": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 				StateFunc: func(val interface{}) string {
 					return strings.ToUpper(val.(string))
 				},
@@ -34,7 +39,7 @@ func resourceOracleRdbmsCreateProfile(d *schema.ResourceData, meta interface{}) 
 
 	d.SetId(d.Get("profile").(string))
 
-	return resourceOracleRdbmsUpdateProfile(d, meta)
+	return resourceOracleRdbmsReadProfile(d, meta)
 }
 
 func resourceOracleRdbmsDeleteProfile(d *schema.ResourceData, meta interface{}) error {
@@ -49,6 +54,17 @@ func resourceOracleRdbmsDeleteProfile(d *schema.ResourceData, meta interface{}) 
 
 func resourceOracleRdbmsReadProfile(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsReadProfile")
+	var resourceProfile oraclehelper.ResourceProfile
+	client := meta.(*providerConfiguration).Client
+
+	resourceProfile.Profile = d.Id()
+	rawProfile, err := client.ProfileService.ReadProfile(resourceProfile)
+	if err != nil {
+		log.Printf("[ERROR] ReadProfile failed")
+		return err
+	}
+	profile := rawProfile["PROFILE"]
+	d.Set("profile", profile)
 	return nil
 }
 

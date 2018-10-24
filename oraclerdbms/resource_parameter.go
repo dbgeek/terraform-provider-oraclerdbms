@@ -14,6 +14,10 @@ func resourceParameter() *schema.Resource {
 		Delete: resourceOracleRdbmsDeleteParameter,
 		Read:   resourceOracleRdbmsReadParameter,
 		Update: resourceOracleRdbmsUpdateParameter,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
+
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -97,7 +101,10 @@ func resourceOracleRdbmsReadParameter(d *schema.ResourceData, meta interface{}) 
 	}
 	d.Set("value", parm.Value)
 	d.Set("name", parm.Name)
-	//d.Set("")
+
+	if d.Get("scope").(string) == "" {
+		d.Set("scope", "BOTH")
+	}
 
 	log.Printf("[DEBUG] name: %s, value: %s, defaultvalue: %s \n", parm.Name, parm.Value, parm.DefaultValue)
 

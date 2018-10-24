@@ -19,6 +19,27 @@ func TestAccUser(t *testing.T) {
 		},
 	})
 }
+func TestAccUser_importBasic(t *testing.T) {
+	resourceName := "oraclerdbms_user.test"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		//CheckDestroy: testAccCheckInstanceDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccUserConfigBasic,
+			},
+
+			{
+				ResourceName:            resourceName,
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"password"},
+			},
+		},
+	})
+}
 
 const testAccUserConfigBasic = `
 resource "oraclerdbms_user" "test" {

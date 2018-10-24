@@ -65,6 +65,26 @@ func testAccParameterCheckDestroy(s *terraform.State) error {
 	return nil
 }
 
+func TestAccParameter_importBasic(t *testing.T) {
+	resourceName := "oraclerdbms_parameter.test"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccParameterConfigBasic,
+			},
+
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
 const testAccParameterConfigBasic = `
 resource "oraclerdbms_parameter" "test" {
     name = "undo_retention"
