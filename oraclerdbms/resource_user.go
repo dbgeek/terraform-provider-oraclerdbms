@@ -13,6 +13,10 @@ func resourceUser() *schema.Resource {
 		Delete: resourceOracleRdbmsDeleteUser,
 		Read:   resourceOracleRdbmsReadUser,
 		Update: resourceOracleRdbmsUpdateUser,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
+
 		Schema: map[string]*schema.Schema{
 			"username": &schema.Schema{
 				Type:     schema.TypeString,
@@ -119,6 +123,9 @@ func resourceOracleRdbmsReadUser(d *schema.ResourceData, meta interface{}) error
 		log.Println("exit user nil")
 		d.SetId("")
 		return nil
+	}
+	if user.Username != "" {
+		d.Set("username", user.Username)
 	}
 	if user.DefaultTablespace != "" {
 		d.Set("default_tablespace", user.DefaultTablespace)

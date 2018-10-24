@@ -20,6 +20,26 @@ func TestAccProfileLimit(t *testing.T) {
 	})
 }
 
+func TestAccProfileLimit_importBasic(t *testing.T) {
+	resourceName := "oraclerdbms_profile_limit.test1"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccProfileLimitConfigBasic,
+			},
+
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
 const testAccProfileLimitConfigBasic = `
 resource "oraclerdbms_profile" "test1" {
     profile = "TEST666"

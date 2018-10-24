@@ -1,10 +1,9 @@
 package oraclerdbms
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
-	"github.com/hashicorp/terraform/helper/hashcode"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"log"
 	"strings"
@@ -16,6 +15,10 @@ func resourceGrantObjectPrivilege() *schema.Resource {
 		Delete: resourceOracleRdbmsDeleteGrantObjectPrivilege,
 		Read:   resourceOracleRdbmsReadGrantObjectPrivilege,
 		Update: nil,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
+
 		Schema: map[string]*schema.Schema{
 			"grantee": &schema.Schema{
 				Type:     schema.TypeString,
@@ -59,7 +62,6 @@ func resourceGrantObjectPrivilege() *schema.Resource {
 func resourceOracleRdbmsCreateGrantObjectPrivilege(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsCreateGrantObjectPrivilege")
 	var privilegesList []string
-	var resourceGrantObjectPrivilege oraclehelper.ResourceGrantObjectPrivilege
 	client := meta.(*providerConfiguration).Client
 	rawPrivileges := d.Get("privilege")
 	rawPrivilegesList := rawPrivileges.(*schema.Set).List()
@@ -67,17 +69,20 @@ func resourceOracleRdbmsCreateGrantObjectPrivilege(d *schema.ResourceData, meta 
 		str := v.(string)
 		privilegesList = append(privilegesList, str)
 	}
-	resourceGrantObjectPrivilege.Grantee = d.Get("grantee").(string)
-	resourceGrantObjectPrivilege.Privilege = privilegesList
-	resourceGrantObjectPrivilege.Owner = d.Get("owner").(string)
-	resourceGrantObjectPrivilege.ObjectName = d.Get("object").(string)
+
+	resourceGrantObjectPrivilege := oraclehelper.ResourceGrantObjectPrivilege{
+		Grantee:    d.Get("grantee").(string),
+		Owner:      d.Get("owner").(string),
+		ObjectName: d.Get("object").(string),
+		Privilege:  privilegesList,
+	}
 
 	err := client.GrantService.GrantObjectPrivilege(resourceGrantObjectPrivilege)
 	if err != nil {
 		d.SetId("")
 		return err
 	}
-	id := grantObjectPrivIDHash(d.Get("grantee").(string), d.Get("owner").(string), d.Get("object").(string))
+	id := grantObjectPrivID(d.Get("grantee").(string), d.Get("owner").(string), d.Get("object").(string))
 	d.SetId(id)
 	return resourceOracleRdbmsReadGrantObjectPrivilege(d, meta)
 }
@@ -85,7 +90,7 @@ func resourceOracleRdbmsCreateGrantObjectPrivilege(d *schema.ResourceData, meta 
 func resourceOracleRdbmsDeleteGrantObjectPrivilege(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsDeleteGrantObjectPrivilege")
 	var privilegesList []string
-	var resourceGrantObjectPrivilege oraclehelper.ResourceGrantObjectPrivilege
+
 	client := meta.(*providerConfiguration).Client
 	rawPrivileges := d.Get("privilege")
 	rawPrivilegesList := rawPrivileges.(*schema.Set).List()
@@ -94,10 +99,12 @@ func resourceOracleRdbmsDeleteGrantObjectPrivilege(d *schema.ResourceData, meta 
 		privilegesList = append(privilegesList, str)
 	}
 
-	resourceGrantObjectPrivilege.Grantee = d.Get("grantee").(string)
-	resourceGrantObjectPrivilege.Privilege = privilegesList
-	resourceGrantObjectPrivilege.Owner = d.Get("owner").(string)
-	resourceGrantObjectPrivilege.ObjectName = d.Get("object").(string)
+	resourceGrantObjectPrivilege := oraclehelper.ResourceGrantObjectPrivilege{
+		Grantee:    d.Get("grantee").(string),
+		Owner:      d.Get("owner").(string),
+		ObjectName: d.Get("object").(string),
+		Privilege:  privilegesList,
+	}
 
 	err := client.GrantService.RevokeObjectPrivilege(resourceGrantObjectPrivilege)
 	if err != nil {
@@ -108,24 +115,32 @@ func resourceOracleRdbmsDeleteGrantObjectPrivilege(d *schema.ResourceData, meta 
 
 func resourceOracleRdbmsReadGrantObjectPrivilege(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[DEBUG] resourceOracleRdbmsReadGrantObjectPrivilege grantee:%s\n", d.Get("grantee"))
-	var resourceGrantObjectPrivilege oraclehelper.ResourceGrantObjectPrivilege
 	client := meta.(*providerConfiguration).Client
 
-	resourceGrantObjectPrivilege.Grantee = d.Get("grantee").(string)
+	splitGrantObjectPrivilege := strings.Split(d.Id(), "-")
+	grantee := splitGrantObjectPrivilege[0]
+	owner := splitGrantObjectPrivilege[1]
+	object := splitGrantObjectPrivilege[2]
 
-	_, err := client.GrantService.ReadGrantObjectPrivilege(resourceGrantObjectPrivilege)
+	resourceGrantObjectPrivilege := oraclehelper.ResourceGrantObjectPrivilege{
+		Grantee:    grantee,
+		Owner:      owner,
+		ObjectName: object,
+	}
+	grantedObject, err := client.GrantService.ReadGrantObjectPrivilege(resourceGrantObjectPrivilege)
 	if err != nil {
 		d.SetId("")
 		return err
 	}
-
+	if !d.IsNewResource() {
+		d.Set("grantee", grantee)
+		d.Set("owner", owner)
+		d.Set("object", object)
+		d.Set("privilege", grantedObject.Privileges)
+	}
 	return nil
 }
 
-func grantObjectPrivIDHash(grantee string, owner string, object string) string {
-	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("%s-", grantee))
-	buf.WriteString(fmt.Sprintf("%s-", owner))
-	buf.WriteString(fmt.Sprintf("%s-", object))
-	return fmt.Sprintf("grantobjpriv-%d", hashcode.String(buf.String()))
+func grantObjectPrivID(grantee string, owner string, object string) string {
+	return fmt.Sprintf("%s-%s-%s", grantee, owner, object)
 }

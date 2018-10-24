@@ -1,13 +1,11 @@
 package oraclerdbms
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"strings"
 
 	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
-	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -17,6 +15,10 @@ func resourceGrantSystemPrivilege() *schema.Resource {
 		Delete: resourceOracleRdbmsDeleteGrantSystemPrivilege,
 		Read:   resourceOracleRdbmsReadGrantSystemPrivilege,
 		Update: nil,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
+
 		Schema: map[string]*schema.Schema{
 			"grantee": &schema.Schema{
 				Type:     schema.TypeString,
@@ -50,7 +52,7 @@ func resourceOracleRdbmsCreateGrantSystemPrivilege(d *schema.ResourceData, meta 
 		d.SetId("")
 		return err
 	}
-	id := grantSysPrivIDHash(d.Get("grantee").(string), d.Get("privilege").(string))
+	id := grantSysPrivID(d.Get("grantee").(string), d.Get("privilege").(string))
 	d.SetId(id)
 	return resourceOracleRdbmsReadGrantSystemPrivilege(d, meta)
 }
@@ -75,24 +77,29 @@ func resourceOracleRdbmsReadGrantSystemPrivilege(d *schema.ResourceData, meta in
 	var resourceGrantSystemPrivilege oraclehelper.ResourceGrantSystemPrivilege
 	client := meta.(*providerConfiguration).Client
 
-	resourceGrantSystemPrivilege.Grantee = d.Get("grantee").(string)
+	//ToDo Break out as a function ??
+	splitSystemPrivilege := strings.Split(d.Id(), "-")
+	grantee := splitSystemPrivilege[0]
+	privilege := splitSystemPrivilege[1]
+
+	resourceGrantSystemPrivilege.Grantee = grantee
 
 	sysPrivs, err := client.GrantService.ReadGrantSysPrivs(resourceGrantSystemPrivilege)
 	if err != nil {
 		d.SetId("")
 		return err
 	}
-	if _, ok := sysPrivs[d.Get("privilege").(string)]; !ok {
+	if _, ok := sysPrivs[privilege]; !ok {
 		d.SetId("")
 		return nil
 	}
 
+	d.Set("grantee", grantee)
+	d.Set("privilege", privilege)
+
 	return nil
 }
 
-func grantSysPrivIDHash(grantee string, privilege string) string {
-	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("%s-", grantee))
-	buf.WriteString(fmt.Sprintf("%s-", privilege))
-	return fmt.Sprintf("grantsyspriv-%d", hashcode.String(buf.String()))
+func grantSysPrivID(grantee string, privilege string) string {
+	return fmt.Sprintf("%s-%s", grantee, privilege)
 }

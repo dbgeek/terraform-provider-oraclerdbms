@@ -19,6 +19,25 @@ func TestAccGrantRolePrivs(t *testing.T) {
 		},
 	})
 }
+func TestAccGrantRolePrivs_importBasic(t *testing.T) {
+	resourceName := "oraclerdbms_grant_role_privilege.grantroleprivs"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccGrantRolePrivsConfigBasic,
+			},
+
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
 
 const testAccGrantRolePrivsConfigBasic = `
 resource "oraclerdbms_grant_role_privilege" "grantroleprivs" {

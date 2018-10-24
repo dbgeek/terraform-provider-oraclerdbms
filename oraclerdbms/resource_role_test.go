@@ -20,6 +20,27 @@ func TestAccRole(t *testing.T) {
 	})
 }
 
+func TestAccRole_importBasic(t *testing.T) {
+	resourceName := "oraclerdbms_role.roletest"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccRoleConfigBasic,
+			},
+
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				//ImportStateVerifyIgnore: []string{"password"},
+			},
+		},
+	})
+}
+
 const testAccRoleConfigBasic = `
 resource "oraclerdbms_role" "roletest" {
 	role = "ROLE666"

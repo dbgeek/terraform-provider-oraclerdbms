@@ -1,6 +1,12 @@
 # Terraform oraclerdbms provider changelog
 
-## 0.2.0 (October 19, 2018)
+## 0.2.1 (October 24, 2018)
+
+NOTES:
+
+* Implement Importer for all the resources
+
+## 0.2.0 (October 22, 2018)
 
 NOTES:
 

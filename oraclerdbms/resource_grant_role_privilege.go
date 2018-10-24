@@ -1,12 +1,10 @@
 package oraclerdbms
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
 
 	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
-	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
 	"log"
 )
@@ -17,6 +15,10 @@ func resourceGrantRolePrivilege() *schema.Resource {
 		Delete: resourceOracleRdbmsDeleteGrantRolePrivilege,
 		Read:   resourceOracleRdbmsReadGrantRolePrivilege,
 		Update: nil,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
+
 		Schema: map[string]*schema.Schema{
 			"grantee": &schema.Schema{
 				Type:     schema.TypeString,
@@ -51,7 +53,7 @@ func resourceOracleRdbmsCreateGrantRolePrivilege(d *schema.ResourceData, meta in
 		d.SetId("")
 		return err
 	}
-	id := grantRolePrivIDHash(d.Get("grantee").(string), d.Get("role").(string))
+	id := grantRolePrivID(d.Get("grantee").(string), d.Get("role").(string))
 	d.SetId(id)
 	return resourceOracleRdbmsReadGrantRolePrivilege(d, meta)
 }
@@ -76,24 +78,28 @@ func resourceOracleRdbmsReadGrantRolePrivilege(d *schema.ResourceData, meta inte
 	var resourceGrantRolePrivilege oraclehelper.ResourceGrantRolePrivilege
 	client := meta.(*providerConfiguration).Client
 
-	resourceGrantRolePrivilege.Grantee = d.Get("grantee").(string)
+	//ToDo Break out as a function ??
+	splitRolerivilege := strings.Split(d.Id(), "-")
+	grantee := splitRolerivilege[0]
+	role := splitRolerivilege[1]
+
+	resourceGrantRolePrivilege.Grantee = grantee
 
 	rolePrivs, err := client.GrantService.ReadGrantRolePrivs(resourceGrantRolePrivilege)
 	if err != nil {
 		d.SetId("")
 		return err
 	}
-	if _, ok := rolePrivs[d.Get("role").(string)]; !ok {
+	if _, ok := rolePrivs[role]; !ok {
 		d.SetId("")
 		return nil
 	}
+	d.Set("grantee", grantee)
+	d.Set("role", role)
 
 	return nil
 }
 
-func grantRolePrivIDHash(grantee string, role string) string {
-	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("%s-", grantee))
-	buf.WriteString(fmt.Sprintf("%s-", role))
-	return fmt.Sprintf("grantrolpriv-%d", hashcode.String(buf.String()))
+func grantRolePrivID(grantee string, role string) string {
+	return fmt.Sprintf("%s-%s", grantee, role)
 }
