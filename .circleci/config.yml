@@ -9,7 +9,7 @@ jobs:
         - checkout
         - restore_cache:
             keys:
-                - doracle-instantclient-v1-cache
+                - oracle-instantclient-v1-cache
                 - deps1-{{ checksum ".circleci/requirements.txt" }}
         - run:
             name:
