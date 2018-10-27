@@ -10,6 +10,8 @@ jobs:
         - restore_cache:
             keys:
                 - deps1-{{ checksum ".circleci/requirements.txt" }}
+        - restore_cache:
+            keys:
                 - oracle-instantclient-v1-cache
         - run:
             name:
