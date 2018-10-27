@@ -9,8 +9,8 @@ jobs:
         - checkout
         - restore_cache:
             keys:
-                - oracle-instantclient-v1-cache
                 - deps1-{{ checksum ".circleci/requirements.txt" }}
+                - oracle-instantclient-v1-cache
         - run:
             name:
             command: echo "$(ls -l)"
