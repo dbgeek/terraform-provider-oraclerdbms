@@ -1,0 +1,42 @@
+version: 2
+jobs:
+  build:
+    docker:
+        - image: circleci/python:3.6-stretch-node-browsers-legacy
+    steps:
+        - setup_remote_docker:
+            docker_layer_caching: true
+        - checkout
+        - restore_cache:
+            keys:
+                - doracle-instantclient-v1-cache
+                - deps1-{{ checksum ".circleci/requirements.txt" }}
+        - run:
+            name:
+            command: echo "$(ls -l)"
+        - run:
+            name: setup dependencies
+            command: |
+                mkdir -p /home/circleci/artifacts/oracle
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install -r .circleci/requirements.txt
+        - run:
+            name: Update PATH and Define Environment Variable at Runtime
+            command: |
+                echo 'export PATH=$(pwd)/venv/bin:$PATH' >> $BASH_ENV
+                source $BASH_ENV        
+        - save_cache: # special step to save dependency cache
+            key: deps1-{{ checksum ".circleci/requirements.txt" }}
+            paths:
+                - "venv"
+        - run:
+            name: sync oracle instant client
+            command: aws s3 sync s3://whitepoplar/oracle /home/circleci/artifacts/oracle --no-progress
+        - run:
+            name: ls /home/circleci/artifacts/oracle
+            command: echo "$(ls -1 /home/circleci/artifacts/oracle)"
+        - save_cache:
+            key: oracle-instantclient-v1-cache
+            paths:
+                - /home/circleci/artifacts/oracle
