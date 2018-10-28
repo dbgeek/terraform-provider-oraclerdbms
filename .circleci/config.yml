@@ -7,7 +7,7 @@ jobs:
         steps:
             - checkout
             - save_cache:
-                key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+                key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                 paths:
                     - ~/project
     awscli_dependencies:
@@ -18,12 +18,6 @@ jobs:
             - restore_cache:
                 key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
             - run:
-                name: list workfolder
-                command: echo "$(ls -l)"
-            - run:
-                name: list project foler
-                command: echo "$(ls project -l)"
-            - run:
                 name: setup dependencies
                 command: |
                     python3 -m venv venv
@@ -33,12 +27,32 @@ jobs:
                 key: awscli-{{ checksum "project/.circleci/requirements.txt" }}
                 paths:
                     - "venv"
-
+    oracle_dependencies:
+        docker:
+            - image: circleci/python:3.6-stretch-node-browsers-legacy
+        working_directory: ~/
+        steps:
+            - restore_cache:
+                key: awscli-{{ checksum "project/.circleci/requirements.txt" }}
+            - run:
+                name: create oracle artifact folder
+                command: |
+                    mkdir -p /home/circleci/artifacts/oracle
+            - run:
+                name: sync oracle instant client
+                command: aws s3 sync s3://whitepoplar/oracle /home/circleci/artifacts/oracle --no-progress
+            - save_cache:
+                key: oracle-instantclient-v1-cache
+                paths:
+                    - /home/circleci/artifacts/oracle
 workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - checkout_code
-      - awscli_dependencies:
+        - checkout_code
+        - awscli_dependencies:
             requires:
                 - checkout_code
+        - oracle_dependencies:
+            requires:
+                - awscli_dependencies
