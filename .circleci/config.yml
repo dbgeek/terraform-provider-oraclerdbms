@@ -64,7 +64,7 @@ jobs:
         environment:
             TERRAFORM_VERSION: 0.11.8
             GO_VERSION: 1.11.1
-            ORACLE_INSTANT_CLIENT: 12.2.0.1.0:
+            ORACLE_INSTANT_CLIENT: 12.2.0.1.0
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
