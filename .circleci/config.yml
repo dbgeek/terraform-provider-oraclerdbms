@@ -75,11 +75,14 @@ jobs:
                     - oracle-instantclient-v1-cache
             - setup_remote_docker:
                 docker_layer_caching: true
+             - run:
+                name: ls /home/circleci/artifacts/oracle
+                command: echo "$(ls -1 /home/circleci/artifacts/oracle)"
             - run:
-                name: xx
+                name: unzip instantclient
                 command: |
-                    unzip -qq /home/circleci/artifacts/oracle/instantclient-basic-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
-                    unzip -qq /home/circleci/artifacts/oracle/instantclient-sdk-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
+                    unzip /home/circleci/artifacts/oracle/instantclient-basic-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
+                    unzip /home/circleci/artifacts/oracle/instantclient-sdk-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
             - save_cache:
                 key: oracle-unziped-instantclient-v1-cache
                 paths:
