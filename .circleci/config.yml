@@ -81,8 +81,8 @@ jobs:
             - run:
                 name: unzip instantclient
                 command: |
-                    unzip /home/circleci/artifacts/oracle/instantclient-basic-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
-                    unzip /home/circleci/artifacts/oracle/instantclient-sdk-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
+                    unzip -n /home/circleci/artifacts/oracle/instantclient-basic-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
+                    unzip -n /home/circleci/artifacts/oracle/instantclient-sdk-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
             - save_cache:
                 key: oracle-unziped-instantclient-v1-cache
                 paths:
