@@ -81,9 +81,9 @@ jobs:
             - run:
                 name: tar zip 
                 command: |
-                    cd ../..
-                    tar zcvf terraform-provider-oraclerdbms.tar.gz project/ --exclude  .git/*
-                    mv terraform-provider-oraclerdbms.tar.gz project/docker/
+                    cd ../
+                    tar zcvf terraform-provider-oraclerdbms.tar.gz . 
+                    mv ../terraform-provider-oraclerdbms.tar.gz project/docker/
             - run:
                 name: unzip instantclient
                 command: |
