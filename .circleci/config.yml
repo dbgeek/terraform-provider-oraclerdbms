@@ -75,7 +75,7 @@ jobs:
                     - oracle-instantclient-v1-cache
             - setup_remote_docker:
                 docker_layer_caching: true
-             - run:
+            - run:
                 name: ls /home/circleci/artifacts/oracle
                 command: echo "$(ls -1 /home/circleci/artifacts/oracle)"
             - run:
