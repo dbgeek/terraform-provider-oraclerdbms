@@ -69,7 +69,7 @@ jobs:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
-                key: oracle-unziped-instantclient-v1-cache
+                key: oracle-unzip-instantclient-v1-cache
             - restore_cache:
                 keys:
                     - oracle-instantclient-v1-cache
@@ -84,7 +84,7 @@ jobs:
                     unzip -n /home/circleci/artifacts/oracle/instantclient-basic-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
                     unzip -n /home/circleci/artifacts/oracle/instantclient-sdk-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
             - save_cache:
-                key: oracle-unziped-instantclient-v1-cache
+                key: oracle-unzip-instantclient-v1-cache
                 paths:
                     - lib/oracle/instantclient_12_2
             - run:
