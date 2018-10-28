@@ -17,6 +17,8 @@ jobs:
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                key: awscli-{{ checksum "project/.circleci/requirements.txt" }}
             - run:
                 name: setup dependencies
                 command: |
@@ -36,6 +38,9 @@ jobs:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                 key: awscli-{{ checksum "project/.circleci/requirements.txt" }}
+            - restore_cache:
+                keys:
+                    - oracle-instantclient-v1-cache
             - run:
                 name: create oracle artifact folder
                 command: |
