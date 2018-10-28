@@ -18,15 +18,16 @@ RUN yum -y install gzip tar pkg-config git gcc libaio && \
 
 COPY ./lib/oracle/instantclient_12_2 /usr/lib/instantclient_12_2
 COPY ./lib/oracle/oci8.pc /usr/lib/pkgconfig/oci8.pc
-COPY ./tnsnames.ora /usr/lib/instantclient_12_2/network/admin/tnsnames.ora
 COPY ./go${GO_VERSION}.linux-amd64.tar.gz.sha256 go${GO_VERSION}.linux-amd64.tar.gz.sha256
+COPY terraform-provider-oraclerdbms.tar.gz $GOPATH/src/github.com/dbgeek/terraform-provider-oraclerdbms/terraform-provider-oraclerdbms.tar.gz
 
 RUN curl -s -O https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz && \
     sha256sum -c go${GO_VERSION}.linux-amd64.tar.gz.sha256 && \
     tar -C /usr/local/ -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
     rm -f go${GO_VERSION}.linux-amd64.tar.gz && \
-    mkdir -p "$GOPATH/src/github.com/dbgeek" && \
-    cd "$GOPATH/src/github.com/dbgeek"
+    cd "$GOPATH/src/github.com/dbgeek/terraform-provider-oraclerdbms" && \
+    tar xzf terraform-provider-oraclerdbms.tar.gz && \
+    rm terraform-provider-oraclerdbms.tar.gz
 
 WORKDIR $GOPATH/src/github.com/dbgeek/terraform-provider-oraclerdbms
 

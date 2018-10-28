@@ -57,6 +57,49 @@ jobs:
                 key: oracle-instantclient-v1-cache
                 paths:
                     - /home/circleci/artifacts/oracle
+    build-oracle-image:
+        docker:
+            - image: circleci/python:3.6-stretch-node-browsers-legacy
+        working_directory: ~/project/docker
+        environment:
+            TERRAFORM_VERSION: 0.11.8
+            GO_VERSION: 1.11.1
+            ORACLE_INSTANT_CLIENT: 12.2.0.1.0
+        steps:
+            - restore_cache:
+                key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                key: oracle-unzip-instantclient-v1-cache
+            - restore_cache:
+                keys:
+                    - oracle-instantclient-v1-cache
+            - setup_remote_docker:
+                docker_layer_caching: true
+            - run:
+                name: ls /home/circleci/artifacts/oracle
+                command: echo "$(ls -1 /home/circleci/artifacts/oracle)"
+            - run:
+                name: tar zip 
+                command: |
+                    cd ../
+                    tar zcf ../terraform-provider-oraclerdbms.tar.gz . --exclude='./docker/lib/oracle/instantclient_12_2'
+                    mv ../terraform-provider-oraclerdbms.tar.gz docker/
+            - run:
+                name: unzip instantclient
+                command: |
+                    unzip -qq -n /home/circleci/artifacts/oracle/instantclient-basic-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
+                    unzip -qq -n /home/circleci/artifacts/oracle/instantclient-sdk-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
+                    cd lib/oracle/instantclient_12_2
+                    ln libclntsh.so.12.1 libclntsh.so
+                    ln libclntshcore.so.12.1 libclntshcore.so
+            - save_cache:
+                key: oracle-unzip-instantclient-v1-cache
+                paths:
+                    - lib/oracle/instantclient_12_2
+            - run:
+                name: building oracle image
+                command: |
+                    docker build -t ba78/terraform-provider-oraclerdbms --build-arg tf_version="${TERRAFORM_VERSION}" --build-arg GO_VERSION="${GO_VERSION}" .
 workflows:
   version: 2
   build-and-deploy:
@@ -69,3 +112,6 @@ workflows:
             requires:
                 - checkout_code
                 - awscli_dependencies
+        - build-oracle-image:
+            requires:
+                - oracle_dependencies
