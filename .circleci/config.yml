@@ -82,7 +82,7 @@ jobs:
                 name: tar zip 
                 command: |
                     cd ../
-                    tar zcvf ../terraform-provider-oraclerdbms.tar.gz . --exclude ./docker/lib/oracle/instantclient_12_2
+                    tar zcf ../terraform-provider-oraclerdbms.tar.gz . --exclude='./docker/lib/oracle/instantclient_12_2'
                     mv ../terraform-provider-oraclerdbms.tar.gz docker/
             - run:
                 name: unzip instantclient
