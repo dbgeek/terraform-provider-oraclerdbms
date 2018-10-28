@@ -13,10 +13,16 @@ jobs:
     awscli_dependencies:
         docker:
             - image: circleci/python:3.6-stretch-node-browsers-legacy
-        working_directory: ~
+        working_directory: ~/
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+            - run:
+                name: list workfolder
+                command: echo "$(ls -l)"
+            - run:
+                name: list project foler
+                command: echo "$(ls project -l)"
             - run:
                 name: setup dependencies
                 command: |
