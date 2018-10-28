@@ -58,24 +58,24 @@ jobs:
                 paths:
                     - /home/circleci/artifacts/oracle
     build-oracle-image:
-    docker:
-        - image: circleci/python:3.6-stretch-node-browsers-legacy
-    working_directory: ~/project
-    environment:
-      TERRAFORM_VERSION: 0.11.8
-      GO_VERSION: 1.11.1
-    steps:
-        - restore_cache:
-            key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-        - restore_cache:
-            keys:
-                - oracle-instantclient-v1-cache
-        - setup_remote_docker:
-            docker_layer_caching: true
-        - run:
-            name: building ioracle image
-            command: |
-                docker build -t ba78/terraform-provider-oraclerdbms --build-arg tf_version="${TERRAFORM_VERSION}" --build-arg GO_VERSION="${GO_VERSION}" .
+        docker:
+            - image: circleci/python:3.6-stretch-node-browsers-legacy
+        working_directory: ~/project
+        environment:
+        TERRAFORM_VERSION: 0.11.8
+        GO_VERSION: 1.11.1
+        steps:
+            - restore_cache:
+                key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                keys:
+                    - oracle-instantclient-v1-cache
+            - setup_remote_docker:
+                docker_layer_caching: true
+            - run:
+                name: building ioracle image
+                command: |
+                    docker build -t ba78/terraform-provider-oraclerdbms --build-arg tf_version="${TERRAFORM_VERSION}" --build-arg GO_VERSION="${GO_VERSION}" .
 workflows:
   version: 2
   build-and-deploy:
