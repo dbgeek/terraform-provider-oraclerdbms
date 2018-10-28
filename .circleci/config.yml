@@ -89,6 +89,9 @@ jobs:
                 command: |
                     unzip -qq -n /home/circleci/artifacts/oracle/instantclient-basic-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
                     unzip -qq -n /home/circleci/artifacts/oracle/instantclient-sdk-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
+                    cd lib/oracle/instantclient_12_2
+                    ln libclntsh.so.12.1 libclntsh.so
+                    ln libclntshcore.so.12.1 libclntshcore.so
             - save_cache:
                 key: oracle-unzip-instantclient-v1-cache
                 paths:
