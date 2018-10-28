@@ -60,7 +60,7 @@ jobs:
     build-oracle-image:
         docker:
             - image: circleci/python:3.6-stretch-node-browsers-legacy
-        working_directory: ~/project
+        working_directory: ~/project/docker
         environment:
         TERRAFORM_VERSION: 0.11.8
         GO_VERSION: 1.11.1
