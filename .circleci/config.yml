@@ -33,6 +33,8 @@ jobs:
         working_directory: ~/
         steps:
             - restore_cache:
+                key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
                 key: awscli-{{ checksum "project/.circleci/requirements.txt" }}
             - run:
                 name: create oracle artifact folder
@@ -55,4 +57,5 @@ workflows:
                 - checkout_code
         - oracle_dependencies:
             requires:
+                - checkout_code
                 - awscli_dependencies
