@@ -16,7 +16,7 @@ jobs:
         working_directory: ~/
         steps:
             - restore_cache:
-                key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+                key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                 name: setup dependencies
                 command: |
@@ -24,7 +24,7 @@ jobs:
                     . venv/bin/activate
                     pip install -r project/.circleci/requirements.txt
             - save_cache: # special step to save dependency cache
-                key: awscli-{{ .Branch }}-{{ checksum "project/.circleci/requirements.txt" }}
+                key: awscli-{{ checksum "project/.circleci/requirements.txt" }}
                 paths:
                     - "venv"
     oracle_dependencies:
