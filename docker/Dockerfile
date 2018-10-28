@@ -29,6 +29,7 @@ RUN curl -s -O https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz && \
     rm -f go${GO_VERSION}.linux-amd64.tar.gz && \
     cd "$GOPATH/src/github.com/dbgeek" && \
     tar xzvf terraform-provider-oraclerdbms.tar.gz && \
+    mv project terraform-provider-oraclerdbms && \
     ls -1
 
 #    mkdir -p "$GOPATH/src/github.com/dbgeek" && \
