@@ -68,7 +68,7 @@ jobs:
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-             - restore_cache:
+            - restore_cache:
                 key: oracle-unziped-instantclient-v1-cache
             - restore_cache:
                 keys:
