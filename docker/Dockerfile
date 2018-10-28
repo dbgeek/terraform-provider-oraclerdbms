@@ -16,7 +16,7 @@ RUN yum -y install gzip tar pkg-config git gcc libaio && \
     yum clean all && \
 	rm -rf /var/cache/yum
 
-COPY ./lib/oracle/instantclient_12_2 /usr/lib/instantclient_12_2
+#COPY ./lib/oracle/instantclient_12_2 /usr/lib/instantclient_12_2
 COPY ./lib/oracle/oci8.pc /usr/lib/pkgconfig/oci8.pc
 #COPY ./tnsnames.ora /usr/lib/instantclient_12_2/network/admin/tnsnames.ora
 COPY ./go${GO_VERSION}.linux-amd64.tar.gz.sha256 go${GO_VERSION}.linux-amd64.tar.gz.sha256

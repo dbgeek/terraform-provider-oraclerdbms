@@ -79,10 +79,15 @@ jobs:
                 name: ls /home/circleci/artifacts/oracle
                 command: echo "$(ls -1 /home/circleci/artifacts/oracle)"
             - run:
+                name: tar zip 
+                command: |
+                    cd ../..
+                    tar zcvf terraform-provider-oraclerdbms.tar.gz terraform-provider-oraclerdbms/ --exclude  .git/*
+            - run:
                 name: unzip instantclient
                 command: |
-                    unzip -n /home/circleci/artifacts/oracle/instantclient-basic-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
-                    unzip -n /home/circleci/artifacts/oracle/instantclient-sdk-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
+                    unzip -qq -n /home/circleci/artifacts/oracle/instantclient-basic-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
+                    unzip -qq -n /home/circleci/artifacts/oracle/instantclient-sdk-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
             - save_cache:
                 key: oracle-unzip-instantclient-v1-cache
                 paths:
