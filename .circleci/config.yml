@@ -76,6 +76,10 @@ jobs:
                     - oracle-instantclient-v1-cache
             - setup_remote_docker:
                 docker_layer_caching: true
+            - run: 
+                name: Loging to docker hub
+                command: |
+                    docker login -u $DOCKER_USER -p $DOCKER_PASS
             - run:
                 name: ls /home/circleci/artifacts/oracle
                 command: echo "$(ls -1 /home/circleci/artifacts/oracle)"
@@ -100,7 +104,7 @@ jobs:
             - run:
                 name: building oracle image
                 command: |
-                    docker build -t ba78/terraform-provider-oraclerdbms --build-arg TF_VERSION="${TERRAFORM_VERSION}" --build-arg GO_VERSION="${GO_VERSION}" --build-arg TERRAFORM_PROVIDER_ORACLERDBMS="${TERRAFORM_PROVIDER_ORACLERDBMS}" .
+                    docker build -t ba78/terraform-provider-oraclerdbms:"${TERRAFORM_PROVIDER_ORACLERDBMS}" --build-arg TF_VERSION="${TERRAFORM_VERSION}" --build-arg GO_VERSION="${GO_VERSION}" --build-arg TERRAFORM_PROVIDER_ORACLERDBMS="${TERRAFORM_PROVIDER_ORACLERDBMS}" .
 workflows:
   version: 2
   build-and-deploy:
