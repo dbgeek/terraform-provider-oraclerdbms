@@ -46,7 +46,7 @@ ENV PKG_CONFIG_PATH /usr/lib/pkgconfig
 ENV GOPATH /src
 ENV TNS_ADMIN /usr/lib/instantclient_12_2/network/admin
 
-COPY hashicorp.asc .
+COPY ./hashicorp.asc .
 COPY ./lib/oracle/instantclient_12_2 /usr/lib/instantclient_12_2
 COPY ./lib/oracle/oci8.pc /usr/lib/pkgconfig/oci8.pc
 COPY --from=builder /root/bin/terraform-provider-oraclerdbms /root/.terraform.d/plugins/linux_amd64/terraform-provider-oraclerdbms_v${TERRAFORM_PROVIDER_ORACLERDBMS}
