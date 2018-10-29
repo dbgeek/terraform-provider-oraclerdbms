@@ -66,10 +66,10 @@ RUN yum -y install pkg-config libaio unzip && \
     unzip terraform_${TF_VERSION}_linux_amd64.zip && \
     rm terraform_${TF_VERSION}_linux_amd64.zip SHA256SUMS hashicorp.asc && \
     mv terraform /usr/bin/  && \
-    adduser -d /home/$USER $USER && \
-    chown -R "${USER}":"${USER}" /home/$USER && \
+    adduser -M -d /home/${USER} ${USER} && \
+    chown -R ${USER}:${USER} /home/${USER} && \
     mkdir -p /tf && \
-    chown -R "${USER}":"${USER}" /tf && \
+    chown -R ${USER}:${USER} /tf
 
 USER $USER
 WORKDIR /tf
