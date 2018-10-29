@@ -50,7 +50,7 @@ ENV TNS_ADMIN /usr/lib/instantclient_12_2/network/admin
 COPY ./lib/oracle/instantclient_12_2 /usr/lib/instantclient_12_2
 COPY ./lib/oracle/oci8.pc /usr/lib/pkgconfig/oci8.pc
 COPY --from=builder /go/bin/terraform-provider-oraclerdbms /home/tf/.terraform.d/plugins/linux_amd64/terraform-provider-oraclerdbms_v${TERRAFORM_PROVIDER_ORACLERDBMS}
-COPY --from=builder ./hashicorp.asc .
+COPY --from=builder /tmp/hashicorp.asc .
 
 RUN yum -y install pkg-config libaio unzip && \
     yum clean all && \
