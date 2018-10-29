@@ -32,3 +32,42 @@ RUN curl -s -O https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz && \
 WORKDIR $GOPATH/src/github.com/dbgeek/terraform-provider-oraclerdbms
 
 RUN go install
+
+FROM oraclelinux:7-slim
+ARG TF_VERSION
+ARG TERRAFORM_PROVIDER_ORACLERDBMS
+LABEL maintainer="Björn Ahl <bnal@kba78.me>"
+
+ENV USER=tf
+ENV LD_LIBRARY_PATH /usr/lib/instantclient_12_2
+ENV ORACLE_HOME /usr/lib/instantclient_12_2
+ENV PATH=$PATH:/usr/local/go/bin
+ENV PKG_CONFIG_PATH /usr/lib/pkgconfig
+ENV GOPATH /src
+ENV TNS_ADMIN /usr/lib/instantclient_12_2/network/admin
+
+COPY hashicorp.asc .
+COPY ./lib/oracle/instantclient_12_2 /usr/lib/instantclient_12_2
+COPY ./lib/oracle/oci8.pc /usr/lib/pkgconfig/oci8.pc
+COPY --from=builder /root/bin/terraform-provider-oraclerdbms /root/.terraform.d/plugins/linux_amd64/terraform-provider-oraclerdbms_v${TERRAFORM_PROVIDER_ORACLERDBMS}
+
+RUN yum -y install pkg-config libaio unzip && \
+    yum clean all && \
+	rm -rf /var/cache/yum && \
+    gpg --import hashicorp.asc && \
+    mkdir -p /root/.terraform.d/plugins/linux_amd64 && \
+    curl -fsSLO https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip && \
+    curl -fsSLO https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS && \
+    curl -fsSLO https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_SHA256SUMS.sig && \
+    echo "$(grep terraform_${TF_VERSION}_linux_amd64.zip terraform_${TF_VERSION}_SHA256SUMS)" > SHA256SUMS && \
+    gpg --verify terraform_${TF_VERSION}_SHA256SUMS.sig terraform_${TF_VERSION}_SHA256SUMS && \
+    sha256sum -c SHA256SUMS && \
+    unzip terraform_${TF_VERSION}_linux_amd64.zip && \
+    rm terraform_${TF_VERSION}_linux_amd64.zip SHA256SUMS hashicorp.asc && \
+    mv terraform /usr/bin/  && \
+    adduser -d /home/$USER $USER
+
+USER $USER
+WORKDIR /home/$USER
+
+ENTRYPOINT ["terraform"]
