@@ -108,12 +108,12 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:05c73f97c9aef86e97d6a500ef43b1a99534d1a78f6d6b88924e38a1cbbaf978"
+  digest = "1:fc057b3dc0cc0bc4f4e77692f9af3c1edb493ccfccb3dbf9505e9d3fcff78208"
   name = "github.com/dbgeek/terraform-oracle-rdbms-helper"
   packages = ["oraclehelper"]
   pruneopts = "UT"
-  revision = "dce96a91cede51e9ba5c9c9f4aceba404bffbe36"
-  version = "v0.2.0"
+  revision = "543589ba1501f5452732a1188f6a8c260909d8b3"
+  version = "v0.2.1"
 
 [[projects]]
   digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
@@ -572,7 +572,6 @@
   analyzer-version = 1
   input-imports = [
     "github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper",
-    "github.com/hashicorp/terraform/helper/hashcode",
     "github.com/hashicorp/terraform/helper/resource",
     "github.com/hashicorp/terraform/helper/schema",
     "github.com/hashicorp/terraform/helper/validation",

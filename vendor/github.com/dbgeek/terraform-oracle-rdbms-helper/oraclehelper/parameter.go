@@ -107,7 +107,7 @@ func (p *parameterService) SetParameter(tf ResourceParameter) error {
 func (p *parameterService) ResetParameter(tf ResourceParameter) error {
 	log.Println("[DEBUG] ResetParameter")
 	sqlCommand := fmt.Sprintf("alter system reset %s scope=both", tf.Name)
-
+	log.Printf("[DEBUG] sqlcommand: %s", sqlCommand)
 	_, err := p.client.DBClient.Exec(sqlCommand)
 	if err != nil {
 		return err

@@ -9,16 +9,7 @@ import (
 const (
 	queryTabPrivs = `
 SELECT
-	tp.grantee,
-	tp.owner,
-	tp.table_name,
-	tp.grantor,
-	tp.privilege,
-	tp.grantable,
-	tp.hierarchy,
-	tp.common,
-	tp.type,
-	tp.inherited
+	*
 FROM
 	dba_tab_privs tp
 WHERE tp.grantee = UPPER(:1)
@@ -27,24 +18,14 @@ AND tp.table_name = UPPER(:3)
 `
 	querySysPrivs = `
 SELECT
-	sp.grantee,
-	sp.privilege,
-	sp.admin_option,
-	sp.common,
-	sp.inherited
+	*
 FROM
 	dba_sys_privs sp
 WHERE sp.grantee = UPPER(:1)
 `
 	queryRolePrivs = `
 SELECT
-	rp.grantee,
-	rp.granted_role,
-	rp.admin_option,
-	rp.delegate_option,
-	rp.default_role,
-	rp.common,
-	rp.inherited
+	*
 FROM
 	dba_role_privs rp
 WHERE rp.grantee = UPPER(:1)
@@ -120,20 +101,55 @@ func (tp *grantService) ReadGrantObjectPrivilege(tf ResourceGrantObjectPrivilege
 		return GrantObjectPrivs{}, err
 	}
 	defer rows.Close()
+	cols, _ := rows.Columns()
 	for rows.Next() {
+		columns := make([]interface{}, len(cols))
+		columnPointers := make([]interface{}, len(cols))
+		for i := range columns {
+			columnPointers[i] = &columns[i]
+		}
+		// Scan the result into the column pointers...
+		if err := rows.Scan(columnPointers...); err != nil {
+			return GrantObjectPrivs{}, err
+		}
+
+		m := make(map[string]interface{})
+		for i, colName := range cols {
+			val := columnPointers[i].(*interface{})
+			m[colName] = *val
+		}
 		var grantTable GrantTable
 		log.Printf("[DEBUG] getting privs: ")
-		rows.Scan(&grantTable.Grantee,
-			&grantTable.Owner,
-			&grantTable.TableName,
-			&grantTable.Grantor,
-			&grantTable.Privilege,
-			&grantTable.Grantable,
-			&grantTable.Hierarchy,
-			&grantTable.Common,
-			&grantTable.Type,
-			&grantTable.Inherited,
-		)
+		if val, ok := m["GRANTEE"].(string); ok {
+			grantTable.Grantee = val
+		}
+		if val, ok := m["OWNER"].(string); ok {
+			grantTable.Grantee = val
+		}
+		if val, ok := m["TABLE_NAME"].(string); ok {
+			grantTable.Grantee = val
+		}
+		if val, ok := m["GRANTOR"].(string); ok {
+			grantTable.Grantee = val
+		}
+		if val, ok := m["PRIVILEGE"].(string); ok {
+			grantTable.Grantee = val
+		}
+		if val, ok := m["GRANTABLE"].(string); ok {
+			grantTable.Grantee = val
+		}
+		if val, ok := m["HIERARCHY"].(string); ok {
+			grantTable.Grantee = val
+		}
+		if val, ok := m["COMMON"].(string); ok {
+			grantTable.Grantee = val
+		}
+		if val, ok := m["TYPE"].(string); ok {
+			grantTable.Grantee = val
+		}
+		if val, ok := m["INHERITED"].(string); ok {
+			grantTable.Grantee = val
+		}
 		log.Printf("[DEBUG] getting privs: grantTable.Privilege")
 		privileges = append(privileges, grantTable.Privilege)
 	}
@@ -152,14 +168,42 @@ func (tp *grantService) ReadGrantSysPrivs(tf ResourceGrantSystemPrivilege) (map[
 		return nil, err
 	}
 	defer rows.Close()
+	cols, _ := rows.Columns()
+
 	for rows.Next() {
+		columns := make([]interface{}, len(cols))
+		columnPointers := make([]interface{}, len(cols))
+		for i := range columns {
+			columnPointers[i] = &columns[i]
+		}
+		// Scan the result into the column pointers...
+		if err := rows.Scan(columnPointers...); err != nil {
+			return nil, err
+		}
+
+		m := make(map[string]interface{})
+		for i, colName := range cols {
+			val := columnPointers[i].(*interface{})
+			m[colName] = *val
+		}
+
 		var sysPriv GrantSysPrivs
-		rows.Scan(&sysPriv.Grantee,
-			&sysPriv.Privilege,
-			&sysPriv.AdminOption,
-			&sysPriv.Common,
-			&sysPriv.Inherited,
-		)
+		if val, ok := m["GRANTEE"].(string); ok {
+			sysPriv.Grantee = val
+		}
+		if val, ok := m["PRIVILEGE"].(string); ok {
+			sysPriv.Privilege = val
+		}
+		if val, ok := m["ADMIN_OPTION"].(string); ok {
+			sysPriv.AdminOption = val
+		}
+		if val, ok := m["COMMON"].(string); ok {
+			sysPriv.Common = val
+		}
+		if val, ok := m["INHERITED"].(string); ok {
+			sysPriv.Inherited = val
+		}
+
 		sysPrivs[sysPriv.Privilege] = sysPriv
 	}
 
@@ -174,16 +218,48 @@ func (tp *grantService) ReadGrantRolePrivs(tf ResourceGrantRolePrivilege) (map[s
 		return nil, err
 	}
 	defer rows.Close()
+
+	cols, _ := rows.Columns()
 	for rows.Next() {
+		columns := make([]interface{}, len(cols))
+		columnPointers := make([]interface{}, len(cols))
+		for i := range columns {
+			columnPointers[i] = &columns[i]
+		}
+		// Scan the result into the column pointers...
+		if err := rows.Scan(columnPointers...); err != nil {
+			return nil, err
+		}
+
+		m := make(map[string]interface{})
+		for i, colName := range cols {
+			val := columnPointers[i].(*interface{})
+			m[colName] = *val
+		}
+
 		var rolePriv GrantRolePrivs
-		rows.Scan(&rolePriv.Grantee,
-			&rolePriv.GrantedRole,
-			&rolePriv.AdminOption,
-			&rolePriv.DelegateOption,
-			&rolePriv.DefaultRole,
-			&rolePriv.Common,
-			&rolePriv.Inherited,
-		)
+		if val, ok := m["GRANTEE"].(string); ok {
+			rolePriv.Grantee = val
+		}
+		if val, ok := m["GRANTED_ROLE"].(string); ok {
+			rolePriv.GrantedRole = val
+		}
+		if val, ok := m["ADMIN_OPTION"].(string); ok {
+			rolePriv.AdminOption = val
+		}
+		if val, ok := m["DELEGATE_OPTION"].(string); ok {
+			rolePriv.DelegateOption = val
+		}
+		if val, ok := m["DEFAULT_ROLE"].(string); ok {
+			rolePriv.DefaultRole = val
+		}
+		if val, ok := m["COMMON"].(string); ok {
+			rolePriv.Common = val
+		}
+		if val, ok := m["INHERITED"].(string); ok {
+			rolePriv.Inherited = val
+		}
+
 		rolePrivs[rolePriv.GrantedRole] = rolePriv
 	}
 
