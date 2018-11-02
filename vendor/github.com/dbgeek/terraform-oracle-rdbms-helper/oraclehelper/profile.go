@@ -7,16 +7,9 @@ import (
 
 const (
 	queryProfile = `
-SELECT
-	profile,
-	resource_name,
-	resource_type,
-	limit,
-	common,
-	inherited,
-	implicit
-FROM
-	dba_profiles
+SELECT 
+  * 
+FROM dba_profiles
 WHERE profile = UPPER(:1)
 `
 )
@@ -33,7 +26,7 @@ type (
 		ResourceName string
 		ResourceType string
 		Limit        string
-		Commoon      string
+		Common       string
 		Inherited    string
 		Implicit     string
 	}
@@ -62,20 +55,49 @@ func (p *profileService) ReadProfile(tf ResourceProfile) (map[string]string, err
 	profileparms["PROFILE"] = tf.Profile
 	rows, err := p.client.DBClient.Query(queryProfile, tf.Profile)
 	if err != nil {
-		//return nil, err
-		log.Fatal(err)
+		return nil, err
 	}
 	defer rows.Close()
+	cols, _ := rows.Columns()
 	for rows.Next() {
+		columns := make([]interface{}, len(cols))
+		columnPointers := make([]interface{}, len(cols))
+		for i := range columns {
+			columnPointers[i] = &columns[i]
+		}
+		// Scan the result into the column pointers...
+		if err := rows.Scan(columnPointers...); err != nil {
+			return nil, err
+		}
+
+		m := make(map[string]interface{})
+		for i, colName := range cols {
+			val := columnPointers[i].(*interface{})
+			m[colName] = *val
+		}
+
 		var profileparm profile
-		rows.Scan(&profileparm.Profile,
-			&profileparm.ResourceName,
-			&profileparm.ResourceType,
-			&profileparm.Limit,
-			&profileparm.Commoon,
-			&profileparm.Inherited,
-			&profileparm.Implicit,
-		)
+		if val, ok := m["PROFILE"].(string); ok {
+			profileparm.Profile = val
+		}
+		if val, ok := m["RESOURCE_NAME"].(string); ok {
+			profileparm.ResourceName = val
+		}
+		if val, ok := m["RESOURCE_TYPE"].(string); ok {
+			profileparm.ResourceType = val
+		}
+		if val, ok := m["LIMIT"].(string); ok {
+			profileparm.Limit = val
+		}
+		if val, ok := m["COMMON"].(string); ok {
+			profileparm.Common = val
+		}
+		if val, ok := m["INHERITED"].(string); ok {
+			profileparm.Inherited = val
+		}
+		if val, ok := m["IMPLICIT"].(string); ok {
+			profileparm.Implicit = val
+		}
 		profileparms[profileparm.ResourceName] = profileparm.Limit
 	}
 
