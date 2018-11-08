@@ -3,6 +3,7 @@
 ## 0.2.3 (November 8, 2018)
 
 * Updating vendoring for terraform-oracle-rdbms-helper to 0.2.2
+* First alpha release of grant schema to user. Just support tables and now it revokes/grants everything the grant if there is something diff
 
 ## 0.2.2 (November 2, 2018)
 
