@@ -52,7 +52,6 @@ func (p *profileService) ReadProfile(tf ResourceProfile) (map[string]string, err
 	log.Printf("[DEBUG] Read name: %s\n", tf.Profile)
 	profileparms := make(map[string]string)
 
-	profileparms["PROFILE"] = tf.Profile
 	rows, err := p.client.DBClient.Query(queryProfile, tf.Profile)
 	if err != nil {
 		return nil, err
@@ -100,7 +99,11 @@ func (p *profileService) ReadProfile(tf ResourceProfile) (map[string]string, err
 		}
 		profileparms[profileparm.ResourceName] = profileparm.Limit
 	}
-
+	if len(profileparms) > 0 {
+		profileparms["PROFILE"] = tf.Profile
+	} else {
+		return profileparms, fmt.Errorf("Can not find profile: %s in the dba_profiles", tf.Profile)
+	}
 	return profileparms, nil
 }
 

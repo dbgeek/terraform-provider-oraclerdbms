@@ -1,7 +1,9 @@
 package oraclehelper
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/hashicorp/terraform/helper/hashcode"
 	"log"
 	"strings"
 )
@@ -15,6 +17,42 @@ FROM
 WHERE tp.grantee = UPPER(:1)
 AND tp.owner = UPPER(:2)
 AND tp.table_name = UPPER(:3)
+`
+	queryAllTableInSchema = `
+SELECT
+	table_name
+FROM DBA_TABLES
+WHERE owner = UPPER(:1)
+ORDER BY table_name
+`
+	queryTableGrantsSchemaUser = `
+SELECT
+	tp.table_name
+FROM dba_tab_privs tp
+	INNER JOIN dba_tables t
+		ON t.owner = tp.owner
+		AND t.table_name = tp.table_name
+		AND tp.grantee = UPPER(:1)
+		AND tp.owner = UPPER(:2)
+		AND tp.privilege = UPPER(:3)
+ORDER BY tp.table_name
+`
+	queryTableGrantsMissing = `
+SELECT 
+	table_name
+FROM (
+	SELECT
+		t.table_name,
+		tp.grantee
+	FROM dba_tables t
+		LEFT JOIN dba_tab_privs tp
+			ON t.owner = tp.owner
+			AND t.table_name = tp.table_name
+			AND tp.grantee = UPPER(:1)
+			AND tp.privilege = UPPER(:2)
+	WHERE t.owner = UPPER(:3)
+) WHERE grantee IS NULL
+ORDER BY table_name
 `
 	querySysPrivs = `
 SELECT
@@ -124,31 +162,31 @@ func (tp *grantService) ReadGrantObjectPrivilege(tf ResourceGrantObjectPrivilege
 			grantTable.Grantee = val
 		}
 		if val, ok := m["OWNER"].(string); ok {
-			grantTable.Grantee = val
+			grantTable.Owner = val
 		}
 		if val, ok := m["TABLE_NAME"].(string); ok {
-			grantTable.Grantee = val
+			grantTable.TableName = val
 		}
 		if val, ok := m["GRANTOR"].(string); ok {
-			grantTable.Grantee = val
+			grantTable.Grantor = val
 		}
 		if val, ok := m["PRIVILEGE"].(string); ok {
-			grantTable.Grantee = val
+			grantTable.Privilege = val
 		}
 		if val, ok := m["GRANTABLE"].(string); ok {
-			grantTable.Grantee = val
+			grantTable.Grantable = val
 		}
 		if val, ok := m["HIERARCHY"].(string); ok {
-			grantTable.Grantee = val
+			grantTable.Hierarchy = val
 		}
 		if val, ok := m["COMMON"].(string); ok {
-			grantTable.Grantee = val
+			grantTable.Common = val
 		}
 		if val, ok := m["TYPE"].(string); ok {
-			grantTable.Grantee = val
+			grantTable.Type = val
 		}
 		if val, ok := m["INHERITED"].(string); ok {
-			grantTable.Grantee = val
+			grantTable.Inherited = val
 		}
 		log.Printf("[DEBUG] getting privs: grantTable.Privilege")
 		privileges = append(privileges, grantTable.Privilege)
@@ -287,6 +325,93 @@ func (tp *grantService) GrantObjectPrivilege(tf ResourceGrantObjectPrivilege) er
 		return err
 	}
 
+	return nil
+}
+func (tp *grantService) GetHashSchemaAllTables(tf ResourceGrantObjectPrivilege) (string, error) {
+	log.Printf("[DEBUG] GetHashSchemaAllTables grantee: %s\n", tf.Grantee)
+	var buf bytes.Buffer
+	rows, err := tp.client.DBClient.Query(queryAllTableInSchema, tf.Owner)
+	if err != nil {
+		log.Println("[DEBUG] Query failed")
+		return "", err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var tableName string
+		if err := rows.Scan(&tableName); err != nil {
+			return "", err
+		}
+		buf.WriteString(fmt.Sprintf("%s-", tableName))
+
+	}
+	return fmt.Sprintf("%d", hashcode.String(buf.String())), nil
+}
+func (tp *grantService) GetHashSchemaPrivsToUser(tf ResourceGrantObjectPrivilege) (string, error) {
+	log.Printf("[DEBUG] GetHashSchemaPrivsToUser grantee: %s\n", tf.Grantee)
+	var buf bytes.Buffer
+	rows, err := tp.client.DBClient.Query(queryTableGrantsSchemaUser, tf.Grantee, tf.Owner, tf.Privilege[0])
+	if err != nil {
+		log.Println("[DEBUG] Query failed")
+		return "", err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var tableName string
+		if err := rows.Scan(&tableName); err != nil {
+			return "", err
+		}
+		buf.WriteString(fmt.Sprintf("%s-", tableName))
+
+	}
+	return fmt.Sprintf("%d", hashcode.String(buf.String())), nil
+}
+func (tp *grantService) GrantTableSchemaToUser(tf ResourceGrantObjectPrivilege) error {
+	privilege := strings.Join(tf.Privilege, ",")
+	log.Printf("[DEBUG] GrantTableSchemaToUser grantee: %s owner: %s Privilege: %s\n", tf.Grantee, tf.Owner, privilege)
+	rows, err := tp.client.DBClient.Query(queryTableGrantsMissing, tf.Grantee, tf.Privilege[0], tf.Owner)
+	if err != nil {
+		log.Println("[DEBUG] Query failed")
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var tableName string
+		if err := rows.Scan(&tableName); err != nil {
+			log.Printf("[DEBUG] Faild to scan column")
+			return err
+		}
+		log.Printf("[DEBUG] granting table: %s to user: %s", tableName, tf.Grantee)
+		_, err = tp.client.DBClient.Exec(fmt.Sprintf("grant %s on %s.%s to %s", privilege, tf.Owner, tableName, tf.Grantee))
+		if err != nil {
+			log.Printf("[DEBUG] graning table: %s to user: %s faild \n", tableName, tf.Grantee)
+			return err
+		}
+	}
+	return nil
+}
+
+func (tp *grantService) RevokeTableSchemaFromUser(tf ResourceGrantObjectPrivilege) error {
+	privilege := strings.Join(tf.Privilege, ",")
+	log.Printf("[DEBUG] RevokeTableSchemaFromUser grantee: %s owner: %s Privilege: %s\n", tf.Grantee, tf.Owner, privilege)
+	rows, err := tp.client.DBClient.Query(queryAllTableInSchema, tf.Owner)
+	if err != nil {
+		log.Println("[DEBUG] Query failed")
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var tableName string
+		if err := rows.Scan(&tableName); err != nil {
+			log.Printf("[DEBUG] Faild to scan column")
+			return err
+		}
+		log.Printf("[DEBUG] Revoking table: %s from user: %s", tableName, tf.Grantee)
+		_, err = tp.client.DBClient.Exec(fmt.Sprintf("revoke %s on %s.%s from %s", privilege, tf.Owner, tableName, tf.Grantee))
+		if err != nil {
+			log.Printf("[DEBUG] Revoke table: %s from user: %s faild \n", tableName, tf.Grantee)
+			return err
+		}
+	}
 	return nil
 }
 func (tp *grantService) GrantRolePriv(tf ResourceGrantRolePrivilege) error {
