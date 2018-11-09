@@ -1,5 +1,9 @@
 # Terraform oraclerdbms provider changelog
 
+## 0.2.6 (November 9, 2018)
+
+* using the GetHashSchemaPrivsToUser to get diff
+
 ## 0.2.5 (November 9, 2018)
 
 * Updating vendoring for terraform-oracle-rdbms-helper to 0.2.3

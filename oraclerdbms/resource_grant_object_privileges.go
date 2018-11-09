@@ -168,6 +168,13 @@ func resourceOracleRdbmsDeleteGrantObjectPrivilege(d *schema.ResourceData, meta 
 
 func resourceOracleRdbmsReadGrantObjectPrivilege(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[INFO] resourceOracleRdbmsReadGrantObjectPrivilege grantee:%s\n", d.Get("grantee"))
+	var privilegesList []string
+	rawPrivileges := d.Get("privilege")
+	rawPrivilegesList := rawPrivileges.(*schema.Set).List()
+	for _, v := range rawPrivilegesList {
+		str := v.(string)
+		privilegesList = append(privilegesList, str)
+	}
 	client := meta.(*providerConfiguration).Client
 
 	splitGrantObjectPrivilege := strings.Split(d.Id(), "-")
@@ -207,10 +214,11 @@ func resourceOracleRdbmsReadGrantObjectPrivilege(d *schema.ResourceData, meta in
 	case d.Get("object_type").(string) == "TABLE":
 		log.Println("[DEBUG] resourceOracleRdbmsReadGrantObjectPrivilege schema level on table level")
 		resourceGrantObjectPrivilege := oraclehelper.ResourceGrantObjectPrivilege{
-			Grantee: grantee,
-			Owner:   owner,
+			Grantee:   grantee,
+			Owner:     owner,
+			Privilege: privilegesList,
 		}
-		hash, err := client.GrantService.GetHashSchemaAllTables(resourceGrantObjectPrivilege)
+		hash, err := client.GrantService.GetHashSchemaPrivsToUser(resourceGrantObjectPrivilege)
 		log.Printf("[DEBUG] resourceOracleRdbmsReadGrantObjectPrivilege hash: %s object: %s \n", hash, object)
 		if err != nil {
 			return err
