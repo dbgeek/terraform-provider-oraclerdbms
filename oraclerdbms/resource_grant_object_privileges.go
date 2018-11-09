@@ -202,17 +202,21 @@ func resourceOracleRdbmsReadGrantObjectPrivilege(d *schema.ResourceData, meta in
 	/*
 		Doing the privilege on schema level. For now we only handle tables on schema level
 	*/
+	log.Println("[DEBUG] resourceOracleRdbmsReadGrantObjectPrivilege schema level")
 	switch {
 	case d.Get("object_type").(string) == "TABLE":
+		log.Println("[DEBUG] resourceOracleRdbmsReadGrantObjectPrivilege schema level on table level")
 		resourceGrantObjectPrivilege := oraclehelper.ResourceGrantObjectPrivilege{
 			Grantee: grantee,
 			Owner:   owner,
 		}
 		hash, err := client.GrantService.GetHashSchemaAllTables(resourceGrantObjectPrivilege)
+		log.Printf("[DEBUG] resourceOracleRdbmsReadGrantObjectPrivilege hash: %s object: %s \n", hash, object)
 		if err != nil {
 			return err
 		}
 		if hash != object {
+			log.Printf("[WARN] Hash diff between in state (%s) and the new calculated hash (%s), removing from state", object, hash)
 			d.SetId("")
 		}
 		return nil
