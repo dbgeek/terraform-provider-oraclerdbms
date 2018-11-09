@@ -2,8 +2,8 @@ package oraclehelper
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/hashcode"
 	"log"
 	"strings"
 )
@@ -344,7 +344,10 @@ func (tp *grantService) GetHashSchemaAllTables(tf ResourceGrantObjectPrivilege) 
 		buf.WriteString(fmt.Sprintf("%s-", tableName))
 
 	}
-	return fmt.Sprintf("%d", hashcode.String(buf.String())), nil
+	hash := sha256.New()
+	hash.Write([]byte(buf.String()))
+
+	return fmt.Sprintf("%x", hash.Sum(nil)), nil
 }
 func (tp *grantService) GetHashSchemaPrivsToUser(tf ResourceGrantObjectPrivilege) (string, error) {
 	log.Printf("[DEBUG] GetHashSchemaPrivsToUser grantee: %s\n", tf.Grantee)
@@ -363,7 +366,10 @@ func (tp *grantService) GetHashSchemaPrivsToUser(tf ResourceGrantObjectPrivilege
 		buf.WriteString(fmt.Sprintf("%s-", tableName))
 
 	}
-	return fmt.Sprintf("%d", hashcode.String(buf.String())), nil
+	hash := sha256.New()
+	hash.Write([]byte(buf.String()))
+
+	return fmt.Sprintf("%x", hash.Sum(nil)), nil
 }
 func (tp *grantService) GrantTableSchemaToUser(tf ResourceGrantObjectPrivilege) error {
 	privilege := strings.Join(tf.Privilege, ",")
