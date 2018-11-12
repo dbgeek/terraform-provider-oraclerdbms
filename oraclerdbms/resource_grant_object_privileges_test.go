@@ -38,21 +38,6 @@ func TestAccGrantObjPrivsOnSchema(t *testing.T) {
 				Config: testAccGrantObjPrivsOnSchemaConfigBasic,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("oraclerdbms_grant_object_privilege.grantobjschematest", "owner", "SYSTEM"),
-					//testGrantOnSchemaAddTable(),
-				),
-			},
-			/*resource.TestStep{
-				Config: testAccGrantObjPrivsOnSchemaConfigBasic, // testAccGrantObjPrivsOnSchemaConfigBasic,
-				Check: resource.ComposeTestCheckFunc(
-					testGrantOnSchemaAddTable(),
-				),
-			},*/
-			resource.TestStep{
-				Config: testAccGrantObjPrivsOnSchemaConfigBasic, // testAccGrantObjPrivsOnSchemaConfigBasic,
-				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("oraclerdbms_grant_object_privilege.grantobjschematest", "owner", "SYSTEM"),
-					//testGrantOnSchemaAddTable(),
-					//resource.TestCheckResourceAttr("oraclerdbms_grant_object_privilege.grantobjschematest", "owner", "SYSTEM"),
 				),
 			},
 		},
@@ -111,8 +96,6 @@ func testGrantOnSchemaAddCleanUp() resource.TestCheckFunc {
 }
 
 func testAccGrantObjPrivsOnSchemaConfigBasicDiff() string {
-	//client := testAccProvider.Meta().(*oracleHelperType).Client
-	//client.DBClient.Exec("CREATE TABLE SYSTEM.TST_TBL2(col number)")
 	return `
 	resource "oraclerdbms_grant_object_privilege" "grantobjschematest" {
 		grantee = "${oraclerdbms_user.userobjpriv2.id}"

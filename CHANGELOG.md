@@ -1,5 +1,10 @@
 # Terraform oraclerdbms provider changelog
 
+## 0.2.7 (November 12, 2018)
+
+* Changing name on struct that olding the OracleApi from providerConfiguration to oracleHelperType
+* Generate a diff if privs_sha256 is not equal to objects_sha256
+
 ## 0.2.6 (November 9, 2018)
 
 * using the GetHashSchemaPrivsToUser to get diff

@@ -67,24 +67,17 @@ func resourceGrantObjectPrivilege() *schema.Resource {
 					return strings.ToUpper(val.(string))
 				},
 			},
+			// This need to be changes to TypeSet. There is mutiple of privileges that need to be checked. Now only support SELECT
 			"objects_sha256": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
 				Computed: true,
-				//Optional: true,
-				/*DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					return strings.ToLower(old) == strings.ToLower(new)
-				},*/
 			},
+			// This need to be changes to TypeSet. There is mutiple of privileges that need to be checked. Now only support SELECT
 			"privs_sha256": &schema.Schema{
 				Type:     schema.TypeString,
 				ForceNew: true,
 				Computed: true,
-				//Optional: true,
-				/*DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					log.Printf("[INFO] sha256 new: %s, object: %s\n", new, d.Get("objects_sha256").(string))
-					return strings.ToLower(old) == strings.ToLower(new) && d.Get("objects_sha256").(string) == new
-				},*/
 			},
 		},
 		CustomizeDiff: updateComputed,
@@ -92,24 +85,11 @@ func resourceGrantObjectPrivilege() *schema.Resource {
 }
 
 func updateComputed(d *schema.ResourceDiff, meta interface{}) error {
-	/*	client := meta.(*oracleHelperType).Client
-
-		resourceGrantObjectPrivilege := oraclehelper.ResourceGrantObjectPrivilege{
-			Grantee:   d.Get("grantee").(string),
-			Owner:     d.Get("owner").(string),
-			Privilege: []string{"SELECT"},
-		}
-		hashPrivs, err := client.GrantService.GetHashSchemaPrivsToUser(resourceGrantObjectPrivilege)
-		if err != nil {
-			return err
-		}*/
 	if d.Get("privs_sha256").(string) != d.Get("objects_sha256").(string) {
 		d.SetNewComputed("objects_sha256")
 		d.SetNewComputed("privs_sha256")
 	}
-	log.Printf("[INFO] updateComputed,privs_sha256: %s, objects_sha256: %s\n", d.Get("privs_sha256").(string), d.Get("objects_sha256").(string))
-	//d.SetNew("objects_sha256", d.Get("objects_sha256").(string))
-	//d.SetNew("privs_sha256", d.Get("privs_sha256").(string))
+	log.Printf("[DEBUG] updateComputed,privs_sha256: %s, objects_sha256: %s\n", d.Get("privs_sha256").(string), d.Get("objects_sha256").(string))
 
 	return nil
 }
@@ -172,7 +152,6 @@ func resourceOracleRdbmsCreateGrantObjectPrivilege(d *schema.ResourceData, meta 
 		d.SetId(id)
 		return resourceOracleRdbmsReadGrantObjectPrivilege(d, meta)
 	}
-	//return resourceOracleRdbmsReadGrantObjectPrivilege(d, meta)
 	return nil
 }
 
@@ -282,10 +261,6 @@ func resourceOracleRdbmsReadGrantObjectPrivilege(d *schema.ResourceData, meta in
 			d.Set("objects_sha256", tableHash)
 			d.Set("privs_sha256", privsHash)
 		}
-		/*if privsHash != object {
-			log.Printf("[WARN] Hash diff between in state (%s) and the new calculated hash (%s), removing from state", object, privsHash)
-			d.SetId("")
-		}*/
 		return nil
 	}
 	return nil
