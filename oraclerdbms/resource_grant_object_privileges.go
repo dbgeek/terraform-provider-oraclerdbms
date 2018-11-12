@@ -67,14 +67,36 @@ func resourceGrantObjectPrivilege() *schema.Resource {
 					return strings.ToUpper(val.(string))
 				},
 			},
+			// This need to be changes to TypeSet. There is mutiple of privileges that need to be checked. Now only support SELECT
+			"objects_sha256": &schema.Schema{
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Computed: true,
+			},
+			// This need to be changes to TypeSet. There is mutiple of privileges that need to be checked. Now only support SELECT
+			"privs_sha256": &schema.Schema{
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Computed: true,
+			},
 		},
+		CustomizeDiff: updateComputed,
 	}
 }
 
+func updateComputed(d *schema.ResourceDiff, meta interface{}) error {
+	if d.Get("privs_sha256").(string) != d.Get("objects_sha256").(string) {
+		d.SetNewComputed("objects_sha256")
+		d.SetNewComputed("privs_sha256")
+	}
+	log.Printf("[DEBUG] updateComputed,privs_sha256: %s, objects_sha256: %s\n", d.Get("privs_sha256").(string), d.Get("objects_sha256").(string))
+
+	return nil
+}
 func resourceOracleRdbmsCreateGrantObjectPrivilege(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[INFO] resourceOracleRdbmsCreateGrantObjectPrivilege")
 	var privilegesList []string
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 	rawPrivileges := d.Get("privilege")
 	rawPrivilegesList := rawPrivileges.(*schema.Set).List()
 	for _, v := range rawPrivilegesList {
@@ -121,18 +143,23 @@ func resourceOracleRdbmsCreateGrantObjectPrivilege(d *schema.ResourceData, meta 
 		id := grantObjectPrivID(d.Get("grantee").(string), d.Get("owner").(string), d.Get("object").(string))
 		var hash string
 		hash, err = client.GrantService.GetHashSchemaPrivsToUser(resourceGrantObjectPrivilege)
-		id = grantObjectPrivID(d.Get("grantee").(string), d.Get("owner").(string), hash)
+		if err != nil {
+			return err
+		}
+		d.Set("objects_sha256", hash)
+		d.Set("privs_sha256", hash)
+		id = grantObjectPrivID(d.Get("grantee").(string), d.Get("owner").(string), d.Get("owner").(string)) // hash)
 		d.SetId(id)
 		return resourceOracleRdbmsReadGrantObjectPrivilege(d, meta)
 	}
-	return resourceOracleRdbmsReadGrantObjectPrivilege(d, meta)
+	return nil
 }
 
 func resourceOracleRdbmsDeleteGrantObjectPrivilege(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[INFO] resourceOracleRdbmsDeleteGrantObjectPrivilege")
 	var privilegesList []string
 
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 	rawPrivileges := d.Get("privilege")
 	rawPrivilegesList := rawPrivileges.(*schema.Set).List()
 	for _, v := range rawPrivilegesList {
@@ -175,7 +202,7 @@ func resourceOracleRdbmsReadGrantObjectPrivilege(d *schema.ResourceData, meta in
 		str := v.(string)
 		privilegesList = append(privilegesList, str)
 	}
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	splitGrantObjectPrivilege := strings.Split(d.Id(), "-")
 	grantee := splitGrantObjectPrivilege[0]
@@ -203,7 +230,10 @@ func resourceOracleRdbmsReadGrantObjectPrivilege(d *schema.ResourceData, meta in
 			d.Set("owner", owner)
 			d.Set("object", object)
 			d.Set("privilege", grantedObject.Privileges)
+			d.Set("objects_sha256", owner)
+			d.Set("privs_sha256", object)
 		}
+
 		return nil
 	}
 	/*
@@ -218,14 +248,18 @@ func resourceOracleRdbmsReadGrantObjectPrivilege(d *schema.ResourceData, meta in
 			Owner:     owner,
 			Privilege: privilegesList,
 		}
-		hash, err := client.GrantService.GetHashSchemaPrivsToUser(resourceGrantObjectPrivilege)
-		log.Printf("[DEBUG] resourceOracleRdbmsReadGrantObjectPrivilege hash: %s object: %s \n", hash, object)
+		privsHash, err := client.GrantService.GetHashSchemaPrivsToUser(resourceGrantObjectPrivilege)
+		log.Printf("[DEBUG] resourceOracleRdbmsReadGrantObjectPrivilege hash: %s object: %s \n", privsHash, object)
 		if err != nil {
 			return err
 		}
-		if hash != object {
-			log.Printf("[WARN] Hash diff between in state (%s) and the new calculated hash (%s), removing from state", object, hash)
-			d.SetId("")
+		tableHash, err := client.GrantService.GetHashSchemaAllTables(resourceGrantObjectPrivilege)
+		if err != nil {
+			return err
+		}
+		if !d.IsNewResource() {
+			d.Set("objects_sha256", tableHash)
+			d.Set("privs_sha256", privsHash)
 		}
 		return nil
 	}

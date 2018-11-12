@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-type providerConfiguration struct {
+type oracleHelperType struct {
 	Client *oraclehelper.Client
 }
 
@@ -102,7 +102,7 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	client := oraclehelper.NewClient(config)
 
 	log.Println("[DEBUG] Initializing Oracle DB Helper client")
-	return &providerConfiguration{
+	return &oracleHelperType{
 		Client: client,
 	}, nil
 }

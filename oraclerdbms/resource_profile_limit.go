@@ -41,7 +41,7 @@ func resourceProfileLimit() *schema.Resource {
 func resourceOracleRdbmsCreateProfileLimit(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsCreateProfile")
 	var resourceProfile oraclehelper.ResourceProfile
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	resourceProfile.Profile = d.Get("profile").(string)
 	resourceProfile.ResourceName = d.Get("resource_name").(string)
@@ -58,7 +58,7 @@ func resourceOracleRdbmsDeleteProfileLimit(d *schema.ResourceData, meta interfac
 	resourceProfile.Profile = d.Get("profile").(string)
 	resourceProfile.ResourceName = d.Get("resource_name").(string)
 
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 	client.ProfileService.ResetProfileResourceLimite(resourceProfile)
 
 	return nil
@@ -75,7 +75,7 @@ func resourceOracleRdbmsReadProfileLimit(d *schema.ResourceData, meta interface{
 		Profile: profile,
 	}
 
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	profileLimit, _ := client.ProfileService.ReadProfile(resourceProfile)
 
@@ -88,7 +88,7 @@ func resourceOracleRdbmsReadProfileLimit(d *schema.ResourceData, meta interface{
 
 func resourceOracleRdbmsUpdateProfileLimit(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsUpdateProfile")
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	resourceProfile := oraclehelper.ResourceProfile{
 		Profile:      d.Get("profile").(string),

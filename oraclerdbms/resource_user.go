@@ -62,7 +62,7 @@ func resourceUser() *schema.Resource {
 func resourceOracleRdbmsCreateUser(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsCreateUser")
 	var user oraclehelper.ResourceUser
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	if d.Get("username").(string) != "" {
 		user.Username = d.Get("username").(string)
@@ -89,7 +89,7 @@ func resourceOracleRdbmsCreateUser(d *schema.ResourceData, meta interface{}) err
 func resourceOracleRdbmsDeleteUser(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsDeleteUser")
 	var user oraclehelper.ResourceUser
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	user.Username = d.Id()
 	err := client.UserService.DropUser(user)
@@ -103,7 +103,7 @@ func resourceOracleRdbmsDeleteUser(d *schema.ResourceData, meta interface{}) err
 func resourceOracleRdbmsReadUser(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsReadUser")
 	var resourceUser oraclehelper.ResourceUser
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	resourceUser.Username = d.Id()
 	user, err := client.UserService.ReadUser(resourceUser)
@@ -144,7 +144,7 @@ func resourceOracleRdbmsUpdateUser(d *schema.ResourceData, meta interface{}) err
 	log.Println("[DEBUG] resourceOracleRdbmsUpdateUser")
 	if !d.IsNewResource() {
 		var resourceUser oraclehelper.ResourceUser
-		client := meta.(*providerConfiguration).Client
+		client := meta.(*oracleHelperType).Client
 		if d.Get("username").(string) != "" {
 			resourceUser.Username = d.Get("username").(string)
 		}
