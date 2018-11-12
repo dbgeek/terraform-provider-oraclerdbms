@@ -43,7 +43,7 @@ func resourceGrantSystemPrivilege() *schema.Resource {
 func resourceOracleRdbmsCreateGrantSystemPrivilege(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[INFO] resourceOracleRdbmsCreateGrantSystemPrivilege")
 	var resourceGrantSystemPrivilege oraclehelper.ResourceGrantSystemPrivilege
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	resourceGrantSystemPrivilege.Grantee = d.Get("grantee").(string)
 	resourceGrantSystemPrivilege.Privilege = d.Get("privilege").(string)
@@ -60,7 +60,7 @@ func resourceOracleRdbmsCreateGrantSystemPrivilege(d *schema.ResourceData, meta 
 func resourceOracleRdbmsDeleteGrantSystemPrivilege(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[INFO] resourceOracleRdbmsDeleteGrantSystemPrivilege")
 	var resourceGrantSystemPrivilege oraclehelper.ResourceGrantSystemPrivilege
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	resourceGrantSystemPrivilege.Grantee = d.Get("grantee").(string)
 	resourceGrantSystemPrivilege.Privilege = d.Get("privilege").(string)
@@ -75,7 +75,7 @@ func resourceOracleRdbmsDeleteGrantSystemPrivilege(d *schema.ResourceData, meta 
 func resourceOracleRdbmsReadGrantSystemPrivilege(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[INFO] resourceOracleRdbmsReadGrantSystemPrivilege grantee:%s\n", d.Get("grantee"))
 	var resourceGrantSystemPrivilege oraclehelper.ResourceGrantSystemPrivilege
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	//ToDo Break out as a function ??
 	splitSystemPrivilege := strings.Split(d.Id(), "-")

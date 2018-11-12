@@ -60,7 +60,7 @@ func resourceOracleRdbmsCreateParameter(d *schema.ResourceData, meta interface{}
 	resourceParameter.Value = d.Get("value").(string)
 	resourceParameter.Scope = d.Get("scope").(string)
 
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	client.ParameterService.SetParameter(resourceParameter)
 
@@ -73,7 +73,7 @@ func resourceOracleRdbmsCreateParameter(d *schema.ResourceData, meta interface{}
 func resourceOracleRdbmsDeleteParameter(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] DeleteParameter")
 	var resourceParameter oraclehelper.ResourceParameter
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 	resourceParameter.Name = d.Id()
 
 	client.ParameterService.ResetParameter(resourceParameter)
@@ -86,7 +86,7 @@ func resourceOracleRdbmsDeleteParameter(d *schema.ResourceData, meta interface{}
 func resourceOracleRdbmsReadParameter(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] ReadParameter")
 	var resourceParameter oraclehelper.ResourceParameter
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 	resourceParameter.Name = d.Id()
 
 	parm, err := client.ParameterService.Read(resourceParameter)
@@ -122,7 +122,7 @@ func resourceOracleRdbmsUpdateParameter(d *schema.ResourceData, meta interface{}
 	resourceParameter.Value = d.Get("value").(string)
 
 	if !d.IsNewResource() {
-		client := meta.(*providerConfiguration).Client
+		client := meta.(*oracleHelperType).Client
 		client.ParameterService.SetParameter(resourceParameter)
 	}
 	return resourceOracleRdbmsReadParameter(d, meta)

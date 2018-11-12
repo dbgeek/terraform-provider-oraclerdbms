@@ -1,7 +1,9 @@
 package oraclerdbms
 
 import (
+	"fmt"
 	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/terraform"
 	"testing"
 )
 
@@ -28,13 +30,29 @@ func TestAccGrantObjPrivs(t *testing.T) {
 
 func TestAccGrantObjPrivsOnSchema(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		CheckDestroy: testGrantOnSchemaAddCleanUp(),
+		Providers:    testAccProviders,
 		Steps: []resource.TestStep{
 			resource.TestStep{
 				Config: testAccGrantObjPrivsOnSchemaConfigBasic,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("oraclerdbms_grant_object_privilege.grantobjschematest", "owner", "SYSTEM"),
+					//testGrantOnSchemaAddTable(),
+				),
+			},
+			/*resource.TestStep{
+				Config: testAccGrantObjPrivsOnSchemaConfigBasic, // testAccGrantObjPrivsOnSchemaConfigBasic,
+				Check: resource.ComposeTestCheckFunc(
+					testGrantOnSchemaAddTable(),
+				),
+			},*/
+			resource.TestStep{
+				Config: testAccGrantObjPrivsOnSchemaConfigBasic, // testAccGrantObjPrivsOnSchemaConfigBasic,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("oraclerdbms_grant_object_privilege.grantobjschematest", "owner", "SYSTEM"),
+					//testGrantOnSchemaAddTable(),
+					//resource.TestCheckResourceAttr("oraclerdbms_grant_object_privilege.grantobjschematest", "owner", "SYSTEM"),
 				),
 			},
 		},
@@ -44,7 +62,9 @@ func TestAccGrantObjPrivs_importBasic(t *testing.T) {
 	resourceName := "oraclerdbms_grant_object_privilege.grantobjtest"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
+		PreCheck: func() {
+			testAccPreCheck(t)
+		},
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
@@ -58,6 +78,54 @@ func TestAccGrantObjPrivs_importBasic(t *testing.T) {
 			},
 		},
 	})
+}
+func testDBVersion() resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		oracleHelper := testAccProvider.Meta().(*oracleHelperType)
+		fmt.Printf("[DEBUG] This Dbversion %s\n", oracleHelper.Client.DBVersion)
+		return nil
+	}
+}
+func testGrantOnSchemaAddSetup() resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		client := testAccProvider.Meta().(*oracleHelperType).Client
+		client.DBClient.Exec("CREATE TABLE SYSTEM.TST_TBL1(col number)")
+		return nil
+	}
+}
+func testGrantOnSchemaAddTable() resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		client := testAccProvider.Meta().(*oracleHelperType).Client
+		client.DBClient.Exec("CREATE TABLE SYSTEM.TST_TBL2(col number)")
+		return nil
+	}
+}
+
+func testGrantOnSchemaAddCleanUp() resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		client := testAccProvider.Meta().(*oracleHelperType).Client
+		client.DBClient.Exec("DROP TABLESYSTEM.TST_TBL1")
+		client.DBClient.Exec("DROP TABLE SYSTEM.TST_TBL2")
+		return nil
+	}
+}
+
+func testAccGrantObjPrivsOnSchemaConfigBasicDiff() string {
+	//client := testAccProvider.Meta().(*oracleHelperType).Client
+	//client.DBClient.Exec("CREATE TABLE SYSTEM.TST_TBL2(col number)")
+	return `
+	resource "oraclerdbms_grant_object_privilege" "grantobjschematest" {
+		grantee = "${oraclerdbms_user.userobjpriv2.id}"
+		privilege = ["SELECT","UPDATE"]
+		owner = "SYSTEM"
+		object_type = "TABLE"
+	}
+	resource "oraclerdbms_user" "userobjpriv2" {
+		username = "USER99"
+		password = "change_on_install"
+		default_tablespace = "USERS"
+	}
+	`
 }
 
 const (
@@ -94,6 +162,20 @@ resource "oraclerdbms_user" "userobjpriv" {
 resource "oraclerdbms_grant_object_privilege" "grantobjschematest" {
 	grantee = "${oraclerdbms_user.userobjpriv2.id}"
 	privilege = ["SELECT","UPDATE"]
+	owner = "SYSTEM"
+	object_type = "TABLE"
+}
+resource "oraclerdbms_user" "userobjpriv2" {
+	username = "USER99"
+	password = "change_on_install"
+	default_tablespace = "USERS"
+}
+`
+
+	testAccGrantObjPrivsOnSchemaConfigBasic2 = `
+resource "oraclerdbms_grant_object_privilege" "grantobjschematest" {
+	grantee = "${oraclerdbms_user.userobjpriv2.id}"
+	privilege = ["SELECT"]
 	owner = "SYSTEM"
 	object_type = "TABLE"
 }

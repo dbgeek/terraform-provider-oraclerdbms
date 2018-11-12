@@ -43,7 +43,7 @@ func resourceGrantRolePrivilege() *schema.Resource {
 func resourceOracleRdbmsCreateGrantRolePrivilege(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsCreateGrantRolePrivilege")
 	var resourceGrantRolePrivilege oraclehelper.ResourceGrantRolePrivilege
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	resourceGrantRolePrivilege.Grantee = d.Get("grantee").(string)
 	resourceGrantRolePrivilege.Role = d.Get("role").(string)
@@ -61,7 +61,7 @@ func resourceOracleRdbmsCreateGrantRolePrivilege(d *schema.ResourceData, meta in
 func resourceOracleRdbmsDeleteGrantRolePrivilege(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsDeleteGrantRolePrivilege")
 	var resourceGrantRolePrivilege oraclehelper.ResourceGrantRolePrivilege
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	resourceGrantRolePrivilege.Grantee = d.Get("grantee").(string)
 	resourceGrantRolePrivilege.Role = d.Get("role").(string)
@@ -76,7 +76,7 @@ func resourceOracleRdbmsDeleteGrantRolePrivilege(d *schema.ResourceData, meta in
 func resourceOracleRdbmsReadGrantRolePrivilege(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[DEBUG] resourceOracleRdbmsReadGrantRolePrivilege grantee:%s\n", d.Get("grantee"))
 	var resourceGrantRolePrivilege oraclehelper.ResourceGrantRolePrivilege
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	//ToDo Break out as a function ??
 	splitRolerivilege := strings.Split(d.Id(), "-")

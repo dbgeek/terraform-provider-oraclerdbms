@@ -33,7 +33,7 @@ func resourceProfile() *schema.Resource {
 func resourceOracleRdbmsCreateProfile(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsCreateProfile")
 	var resourceProfile oraclehelper.ResourceProfile
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 	resourceProfile.Profile = d.Get("profile").(string)
 	client.ProfileService.CreateProfile(resourceProfile)
 
@@ -45,7 +45,7 @@ func resourceOracleRdbmsCreateProfile(d *schema.ResourceData, meta interface{}) 
 func resourceOracleRdbmsDeleteProfile(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsDeleteProfile")
 	var resourceProfile oraclehelper.ResourceProfile
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	resourceProfile.Profile = d.Id()
 	client.ProfileService.DeleteProfile(resourceProfile)
@@ -55,7 +55,7 @@ func resourceOracleRdbmsDeleteProfile(d *schema.ResourceData, meta interface{}) 
 func resourceOracleRdbmsReadProfile(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsReadProfile")
 	var resourceProfile oraclehelper.ResourceProfile
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	resourceProfile.Profile = d.Id()
 	rawProfile, err := client.ProfileService.ReadProfile(resourceProfile)

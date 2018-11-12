@@ -397,25 +397,26 @@ func (tp *grantService) GrantTableSchemaToUser(tf ResourceGrantObjectPrivilege) 
 }
 
 func (tp *grantService) RevokeTableSchemaFromUser(tf ResourceGrantObjectPrivilege) error {
-	privilege := strings.Join(tf.Privilege, ",")
-	log.Printf("[DEBUG] RevokeTableSchemaFromUser grantee: %s owner: %s Privilege: %s\n", tf.Grantee, tf.Owner, privilege)
-	rows, err := tp.client.DBClient.Query(queryAllTableInSchema, tf.Owner)
-	if err != nil {
-		log.Println("[DEBUG] Query failed")
-		return err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var tableName string
-		if err := rows.Scan(&tableName); err != nil {
-			log.Printf("[DEBUG] Faild to scan column")
+	for _, v := range tf.Privilege {
+		log.Printf("[DEBUG] RevokeTableSchemaFromUser grantee: %s owner: %s Privilege: %s\n", tf.Grantee, tf.Owner, v)
+		rows, err := tp.client.DBClient.Query(queryTableGrantsSchemaUser, tf.Grantee, tf.Owner, v)
+		if err != nil {
+			log.Println("[DEBUG] Query failed")
 			return err
 		}
-		log.Printf("[DEBUG] Revoking table: %s from user: %s", tableName, tf.Grantee)
-		_, err = tp.client.DBClient.Exec(fmt.Sprintf("revoke %s on %s.%s from %s", privilege, tf.Owner, tableName, tf.Grantee))
-		if err != nil {
-			log.Printf("[DEBUG] Revoke table: %s from user: %s faild \n", tableName, tf.Grantee)
-			return err
+		defer rows.Close()
+		for rows.Next() {
+			var tableName string
+			if err := rows.Scan(&tableName); err != nil {
+				log.Printf("[DEBUG] Faild to scan column")
+				return err
+			}
+			log.Printf("[DEBUG] Revoking table: %s from user: %s", tableName, tf.Grantee)
+			_, err = tp.client.DBClient.Exec(fmt.Sprintf("revoke %s on %s.%s from %s", v, tf.Owner, tableName, tf.Grantee))
+			if err != nil {
+				log.Printf("[DEBUG] Revoke table: %s from user: %s faild \n", tableName, tf.Grantee)
+				return err
+			}
 		}
 	}
 	return nil

@@ -34,7 +34,7 @@ func resourceRole() *schema.Resource {
 func resourceOracleRdbmsCreateRole(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsCreateRole")
 
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 
 	resourceRole := oraclehelper.ResourceRole{
 		Role: d.Get("role").(string),
@@ -51,7 +51,7 @@ func resourceOracleRdbmsCreateRole(d *schema.ResourceData, meta interface{}) err
 
 func resourceOracleRdbmsDeleteRole(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsDeleteRole")
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 	resourceRole := oraclehelper.ResourceRole{
 		Role: d.Id(),
 	}
@@ -65,7 +65,7 @@ func resourceOracleRdbmsDeleteRole(d *schema.ResourceData, meta interface{}) err
 }
 func resourceOracleRdbmsReadRole(d *schema.ResourceData, meta interface{}) error {
 	log.Println("[DEBUG] resourceOracleRdbmsReadRole")
-	client := meta.(*providerConfiguration).Client
+	client := meta.(*oracleHelperType).Client
 	resourceRole := oraclehelper.ResourceRole{
 		Role: d.Id(),
 	}

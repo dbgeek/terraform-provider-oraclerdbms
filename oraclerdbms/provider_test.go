@@ -1,6 +1,7 @@
 package oraclerdbms
 
 import (
+	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
 	"github.com/hashicorp/terraform/terraform"
 	"os"
 	"testing"
@@ -10,9 +11,11 @@ import (
 
 var testAccProviders map[string]terraform.ResourceProvider
 var testAccProvider *schema.Provider
+var client oraclehelper.Client
 
 func init() {
 	testAccProvider = Provider().(*schema.Provider)
+	testAccProvider.ConfigureFunc = providerConfigure
 	testAccProviders = map[string]terraform.ResourceProvider{
 		"oraclerdbms": testAccProvider,
 	}
