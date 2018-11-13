@@ -1,5 +1,9 @@
 # Terraform oraclerdbms provider changelog
 
+## 0.2.8 (November 13, 2018)
+
+* Updating vendoring for terraform-oracle-rdbms-helper to v0.2.5
+
 ## 0.2.7 (November 12, 2018)
 
 * Changing name on struct that olding the OracleApi from providerConfiguration to oracleHelperType

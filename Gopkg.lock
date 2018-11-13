@@ -108,12 +108,12 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:2a8f4c1ffb9da5dde355dbfc7bf07a769544ce51ea77f6b6180c7e34205b4f6e"
+  digest = "1:e6250a245d192fb2414f1c60c49476507dc976afa40b9442d9cf267b0fcc39af"
   name = "github.com/dbgeek/terraform-oracle-rdbms-helper"
   packages = ["oraclehelper"]
   pruneopts = "UT"
-  revision = "d59dee45e2da0e79c34bddcbfe65b32d77dba70f"
-  version = "v0.2.4"
+  revision = "7ca835a249461c7cf6b3be9f02b21dd309cbc97a"
+  version = "v0.2.5"
 
 [[projects]]
   digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
