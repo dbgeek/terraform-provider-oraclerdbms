@@ -28,6 +28,7 @@ type (
 		UserService      *userService
 		RoleService      *roleService
 		GrantService     *grantService
+		StatsService     *statsService
 	}
 )
 
@@ -80,6 +81,7 @@ func NewClient(cfg Cfg) *Client {
 	c.UserService = &userService{client: c}
 	c.RoleService = &roleService{client: c}
 	c.GrantService = &grantService{client: c}
+	c.StatsService = &statsService{client: c}
 	c.DBVersion, _ = version.NewVersion(dBVersion)
 	log.Printf("[DEBUG] dbversion: %v", c.DBVersion)
 
