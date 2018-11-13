@@ -73,6 +73,7 @@ func Provider() terraform.ResourceProvider {
 			"oraclerdbms_profile":                resourceProfile(),
 			"oraclerdbms_profile_limit":          resourceProfileLimit(),
 			"oraclerdbms_role":                   resourceRole(),
+			"oraclerdbms_stats":                  resourceStats(),
 			"oraclerdbms_user":                   resourceUser(),
 		},
 

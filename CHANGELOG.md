@@ -3,6 +3,7 @@
 ## 0.2.8 (November 13, 2018)
 
 * Updating vendoring for terraform-oracle-rdbms-helper to v0.2.5
+* Implement resource oraclerdbms_stats
 
 ## 0.2.7 (November 12, 2018)
 
