@@ -80,7 +80,7 @@ func resourceOracleRdbmsCreateStats(d *schema.ResourceData, meta interface{}) er
 			d.SetId("")
 			return err
 		}
-		id := fmt.Sprintf("STATS-SCHEMA-%s", d.Get("preference_name").(string))
+		id := fmt.Sprintf("STATS-%s-%s", d.Get("owner_name").(string), d.Get("preference_name").(string))
 		d.SetId(id)
 	case d.Get("owner_name").(string) != "" && d.Get("table_name").(string) != "":
 		log.Println("[DEBUG] table")
@@ -111,14 +111,12 @@ func resourceOracleRdbmsDeleteStats(d *schema.ResourceData, meta interface{}) er
 		/*
 			No solution how to reset a parameter global to default :/
 			DBMS_STATS.RESET_GLOBAL_PREF_DEFAULTS; resets all parameters to default :/
-
 		*/
 
 	case d.Get("owner_name").(string) != "" && d.Get("table_name").(string) == "":
 		log.Println("[DEBUG] schema")
 		resourceStats := oraclehelper.ResourceStats{
-			Pname:   d.Get("preference_name").(string),
-			OwnName: d.Get("owner_name").(string),
+			Pname: d.Get("preference_name").(string),
 		}
 
 		result, err := client.StatsService.ReadGlobalPre(resourceStats)
@@ -127,30 +125,30 @@ func resourceOracleRdbmsDeleteStats(d *schema.ResourceData, meta interface{}) er
 			return err
 		}
 		err = client.StatsService.SetSchemaPre(oraclehelper.ResourceStats{
-			Pname:   result.Pname,
-			OwnName: result.OwnName,
+			Pname:   d.Get("preference_name").(string),
+			OwnName: d.Get("owner_name").(string),
 			Pvalu:   result.Pvalu,
 		})
 		if err != nil {
 			d.SetId("")
 			return err
 		}
+
 	case d.Get("owner_name").(string) != "" && d.Get("table_name").(string) != "":
 		log.Println("[DEBUG] table")
 
 		resourceStats := oraclehelper.ResourceStats{
-			Pname:   d.Get("preference_name").(string),
-			OwnName: d.Get("owner_name").(string),
+			Pname: d.Get("preference_name").(string),
 		}
 
-		result, err := client.StatsService.ReadSchemaPref(resourceStats)
+		result, err := client.StatsService.ReadGlobalPre(resourceStats)
 		if err != nil {
 			d.SetId("")
 			return err
 		}
 		err = client.StatsService.SetTabPre(oraclehelper.ResourceStats{
-			Pname:   result.Pname,
-			OwnName: result.OwnName,
+			Pname:   d.Get("preference_name").(string),
+			OwnName: d.Get("owner_name").(string),
 			TaBName: d.Get("table_name").(string),
 			Pvalu:   result.Pvalu,
 		})
@@ -182,17 +180,9 @@ func resourceOracleRdbmsReadStats(d *schema.ResourceData, meta interface{}) erro
 
 	case d.Get("owner_name").(string) != "" && d.Get("table_name").(string) == "":
 		log.Println("[DEBUG] schema")
-		resourceStats := oraclehelper.ResourceStats{
-			Pname:   d.Get("preference_name").(string),
-			OwnName: d.Get("owner_name").(string),
-		}
-		result, err := client.StatsService.ReadSchemaPref(resourceStats)
-		if err != nil {
-			d.SetId("")
-			return err
-		}
-
-		d.Set("preference_value", result.Pvalu)
+		/*
+			Oracle have no support for this
+		*/
 	case d.Get("owner_name").(string) != "" && d.Get("table_name").(string) != "":
 		log.Println("[DEBUG] table")
 		resourceStats := oraclehelper.ResourceStats{
@@ -253,5 +243,6 @@ func resourceOracleRdbmsUpdateStats(d *schema.ResourceData, meta interface{}) er
 			return err
 		}
 	}
+
 	return nil
 }
