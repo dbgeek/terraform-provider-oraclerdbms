@@ -1,5 +1,10 @@
 # Terraform oraclerdbms provider changelog
 
+## 0.2.9 (November 15, 2018)
+
+* Bumping terraform-oracle-rdbms-helper to v0.2.7
+* Adding support to delete resource operation.
+
 ## 0.2.8 (November 13, 2018)
 
 * Updating vendoring for terraform-oracle-rdbms-helper to v0.2.5
