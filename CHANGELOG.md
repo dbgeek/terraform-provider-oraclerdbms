@@ -4,6 +4,7 @@
 
 * Bumping terraform-oracle-rdbms-helper to v0.2.7
 * Adding support to delete resource operation.
+* objects_sha256 & privs_sha256 from string to map to track sha256 per privilege
 
 ## 0.2.8 (November 13, 2018)
 
