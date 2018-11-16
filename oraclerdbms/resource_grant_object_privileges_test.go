@@ -131,7 +131,7 @@ resource "oraclerdbms_user" "userobjpriv" {
 resource "oraclerdbms_grant_object_privilege" "grantobjtest" {
 	grantee = "${oraclerdbms_user.userobjpriv.id}"
 	privilege = ["SELECT"]
-	owner = "system"
+	owner = "SYSTEM"
 	object = "TEST"
 
 }
