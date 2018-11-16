@@ -10,11 +10,6 @@ SELECT
 	DBMS_STATS.GET_PREFS (:1,:2,:3) AS pvalue 
 FROM dual
 `
-	querySchemaPref = `
-SELECT 
-	DBMS_STATS.GET_PREFS (:1,:2) AS pvalue 
-FROM dual
-`
 	queryGlobalPref = `
 SELECT 
 	DBMS_STATS.GET_PREFS (:1) AS pvalue 
@@ -39,10 +34,11 @@ END;
 `
 	setTablePref = `
 BEGIN
-	DBMS_STATS.SET_TABLE_PREFS(pname=>'',
-		ownname => :1,
-		tabname => :2,
-		pvalue 	=> :3
+	DBMS_STATS.SET_TABLE_PREFS(
+		pname	=> :1,
+		ownname => :2,
+		tabname => :3,
+		pvalue 	=> :4
 	);
 END;
 `
@@ -89,16 +85,6 @@ func (r *statsService) SetGlobalPre(tf ResourceStats) error {
 	return nil
 }
 
-func (r *statsService) ReadSchemaPref(tf ResourceStats) (*Stats, error) {
-	log.Printf("[DEBUG] ReadSchemaPref pname: %s owner: %s\n", tf.Pname, tf.OwnName)
-	statsType := &Stats{}
-
-	err := r.client.DBClient.QueryRow(queryTablePref, tf.Pname, tf.OwnName).Scan(&statsType.Pvalu)
-	if err != nil {
-		return nil, err
-	}
-	return statsType, nil
-}
 func (r *statsService) SetSchemaPre(tf ResourceStats) error {
 	log.Printf("[DEBUG] SetSchemaPre pname: %sowner: %s pvalue: %s\n", tf.Pname, tf.OwnName, tf.Pvalu)
 
