@@ -2,10 +2,11 @@ package oraclerdbms
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
-	"log"
 )
 
 type oracleHelperType struct {

@@ -1,11 +1,12 @@
 package oraclerdbms
 
 import (
+	"log"
+	"strings"
+
 	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
-	"log"
-	"strings"
 )
 
 func resourceParameter() *schema.Resource {

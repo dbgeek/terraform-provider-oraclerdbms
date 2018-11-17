@@ -1,8 +1,9 @@
 package oraclerdbms
 
 import (
-	"github.com/hashicorp/terraform/terraform"
 	"testing"
+
+	"github.com/hashicorp/terraform/terraform"
 )
 
 func TestGrantObjectPrivilegeMigrateState(t *testing.T) {
