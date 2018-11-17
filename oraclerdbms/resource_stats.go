@@ -2,10 +2,11 @@ package oraclerdbms
 
 import (
 	"fmt"
-	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
-	"github.com/hashicorp/terraform/helper/schema"
 	"log"
 	"strings"
+
+	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func resourceStats() *schema.Resource {

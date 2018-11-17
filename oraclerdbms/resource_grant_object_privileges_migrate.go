@@ -2,8 +2,9 @@ package oraclerdbms
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform/terraform"
 	"log"
+
+	"github.com/hashicorp/terraform/terraform"
 )
 
 func resourceOracleRdbmsGrantObjectPrivilegeMigrate(

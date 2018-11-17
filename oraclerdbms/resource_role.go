@@ -1,11 +1,11 @@
 package oraclerdbms
 
 import (
-	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
-	"github.com/hashicorp/terraform/helper/schema"
+	"log"
 	"strings"
 
-	"log"
+	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
+	"github.com/hashicorp/terraform/helper/schema"
 )
 
 func resourceRole() *schema.Resource {

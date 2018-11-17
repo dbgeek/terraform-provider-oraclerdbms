@@ -2,11 +2,11 @@ package oraclerdbms
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
 	"github.com/hashicorp/terraform/helper/schema"
-	"log"
 )
 
 func resourceGrantRolePrivilege() *schema.Resource {

@@ -1,10 +1,11 @@
 package oraclerdbms
 
 import (
-	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
-	"github.com/hashicorp/terraform/terraform"
 	"os"
 	"testing"
+
+	"github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper"
+	"github.com/hashicorp/terraform/terraform"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )
