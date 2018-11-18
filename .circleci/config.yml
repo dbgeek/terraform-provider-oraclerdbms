@@ -92,6 +92,35 @@ jobs:
                 name: push image to docker hub
                 command: |
                     docker push ba78/terraform-provider-oraclerdbms:"${TERRAFORM_PROVIDER_ORACLERDBMS}"
+    push-provider-binary:
+        docker:
+            - image: ba78/golang-oracle:0.0.2
+        working_directory: /go/bin
+        environment:
+            TERRAFORM_VERSION: 0.11.8
+            GO_VERSION: 1.11.1
+            ORACLE_INSTANT_CLIENT: 12.2.0.1.0
+            TERRAFORM_PROVIDER_ORACLERDBMS: 0.2.9
+        steps:
+            - restore_cache:
+                key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                key: v1-go-bin-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - run:
+                name: create scha256sum file
+                command: |
+                    sha256sum terraform-provider-oraclerdbms > terraform-provider-oraclerdbms_v${TERRAFORM_PROVIDER_ORACLERDBMS}.sha256
+            - run: 
+                name: login to gcloud
+                command: |
+                    echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+                    gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+                    gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+            - run:
+                name: cp provider & sha256sum file to google cloud storage
+                command: |
+                    gsutil cp terraform-provider-oraclerdbms gs://terraform-provider-oraclerdbms/linux_amd64/terraform-provider-oraclerdbms_v${TERRAFORM_PROVIDER_ORACLERDBMS}
+                    gsutil cp terraform-provider-oraclerdbms_v${TERRAFORM_PROVIDER_ORACLERDBMS}.sha256 gs://terraform-provider-oraclerdbms/linux_amd64/terraform-provider-oraclerdbms_v${TERRAFORM_PROVIDER_ORACLERDBMS}.sha256
 workflows:
   version: 2
   build-and-deploy:
@@ -101,6 +130,13 @@ workflows:
             requires:
                 - checkout_code
         - build-oracle-image:
+            filters:
+                branches:
+                    only: master
+            requires:
+                - build_terraform_provider_oraclerdbms
+                - checkout_code
+        - push-provider-binary:
             filters:
                 branches:
                     only: master
