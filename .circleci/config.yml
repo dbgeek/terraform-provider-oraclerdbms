@@ -27,13 +27,13 @@ jobs:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
-                name: ls
-                command: |
-                    ls /usr/lib/pkgconfig
-            - run:
                 name: go install
                 command: |
                     go install
+            - run:
+                name: ls
+                command: |
+                    ls /go/bin
     oracle_dependencies:
         docker:
             - image: circleci/python:3.6-stretch-node-browsers-legacy
