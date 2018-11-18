@@ -102,7 +102,7 @@ workflows:
                 - checkout_code
         - build-oracle-image:
             filters:
-                branches:	
+                branches:
                     only: master
             requires:
                 - build_terraform_provider_oraclerdbms
