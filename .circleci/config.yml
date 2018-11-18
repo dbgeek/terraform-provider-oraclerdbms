@@ -83,7 +83,7 @@ jobs:
             - run:
                 name: cp provider binary
                 command: |
-                    cp /go/bin/terraform-provider-oraclerdbms docker/terraform-provider-oraclerdbms/${TERRAFORM_VERSION}"
+                    cp /go/bin/terraform-provider-oraclerdbms docker/terraform-provider-oraclerdbms/${TERRAFORM_VERSION}
             - run:
                 name: building oracle image
                 command: |
