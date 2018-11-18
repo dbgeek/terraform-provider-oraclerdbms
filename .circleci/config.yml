@@ -137,6 +137,9 @@ workflows:
                 - build_terraform_provider_oraclerdbms
                 - checkout_code
         - push-provider-binary:
+            filters:
+                branches:
+                    only: master
             requires:
                 - build_terraform_provider_oraclerdbms
                 - checkout_code
