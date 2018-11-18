@@ -93,7 +93,8 @@ jobs:
                 command: |
                     docker push ba78/terraform-provider-oraclerdbms:"${TERRAFORM_PROVIDER_ORACLERDBMS}"
     push-provider-binary:
-        docker: ba78/golang-oracle:0.0.2
+        docker:
+            - image: ba78/golang-oracle:0.0.2
         working_directory: /go/bin
         environment:
             TERRAFORM_VERSION: 0.11.8
