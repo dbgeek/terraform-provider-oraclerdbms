@@ -5,7 +5,8 @@ jobs:
         docker:
             - image: ba78/golang-oracle:0.0.1   
         steps:
-            - checkout
+            - checkout:
+                path:  /go/src/github.com/dbgeek
             - run:
                 name: list dir
                 command: |
