@@ -31,6 +31,10 @@ jobs:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
+                name: ls
+                command: |
+                    ls /usr/lib/pkgconfig
+            - run:
                 name: go install
                 command: |
                     go install
