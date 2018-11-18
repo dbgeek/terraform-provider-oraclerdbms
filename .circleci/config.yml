@@ -101,7 +101,7 @@ workflows:
             requires:
                 - checkout_code
         - build-oracle-image:
-            filters:	
+            filters:
                 branches:	
                     only: master
             requires:
