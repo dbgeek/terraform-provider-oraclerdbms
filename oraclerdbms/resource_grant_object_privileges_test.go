@@ -2,9 +2,10 @@ package oraclerdbms
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"testing"
 )
 
 func TestAccGrantObjPrivs(t *testing.T) {

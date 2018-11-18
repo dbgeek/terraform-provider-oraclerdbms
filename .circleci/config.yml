@@ -3,32 +3,37 @@ version: 2
 jobs:
     checkout_code:
         docker:
-            - image: circleci/python:3.6-stretch-node-browsers-legacy
+            - image: ba78/golang-oracle:0.0.2
         steps:
-            - checkout
+            - checkout:
+                path:  /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
+            - run:
+                name: list dir
+                command: |
+                    ls /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
+            - run:
+                name: pwd dir
+                command: |
+                    pwd
             - save_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                 paths:
-                    - ~/project
-    awscli_dependencies:
+                    - /go/src/github.com/dbgeek
+    build_terraform_provider_oraclerdbms:
         docker:
-            - image: circleci/python:3.6-stretch-node-browsers-legacy
-        working_directory: ~/
+            - image: ba78/golang-oracle:0.0.2
+        working_directory: /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                key: awscli-{{ checksum "project/.circleci/requirements.txt" }}
             - run:
-                name: setup dependencies
+                name: go install
                 command: |
-                    python3 -m venv venv
-                    . venv/bin/activate
-                    pip install -r project/.circleci/requirements.txt
-            - save_cache: # special step to save dependency cache
-                key: awscli-{{ checksum "project/.circleci/requirements.txt" }}
+                    go install
+            - save_cache:
+                key: v1-go-bin-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                 paths:
-                    - "venv"
+                    - /go/bin
     oracle_dependencies:
         docker:
             - image: circleci/python:3.6-stretch-node-browsers-legacy
@@ -36,8 +41,6 @@ jobs:
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                key: awscli-{{ checksum "project/.circleci/requirements.txt" }}
             - restore_cache:
                 keys:
                     - oracle-instantclient-v1-cache
@@ -59,8 +62,8 @@ jobs:
                     - /home/circleci/artifacts/oracle
     build-oracle-image:
         docker:
-            - image: circleci/python:3.6-stretch-node-browsers-legacy
-        working_directory: ~/project/docker
+            - image: ba78/golang-oracle:0.0.2
+        working_directory: /go/src/github.com/dbgeek/terraform-provider-oraclerdbms/docker
         environment:
             TERRAFORM_VERSION: 0.11.8
             GO_VERSION: 1.11.1
@@ -70,10 +73,7 @@ jobs:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
-                key: oracle-unzip-instantclient-v1-cache
-            - restore_cache:
-                keys:
-                    - oracle-instantclient-v1-cache
+                key: v1-go-bin-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - setup_remote_docker:
                 docker_layer_caching: true
             - run: 
@@ -81,26 +81,9 @@ jobs:
                 command: |
                     docker login -u $DOCKER_USER -p $DOCKER_PASS
             - run:
-                name: ls /home/circleci/artifacts/oracle
-                command: echo "$(ls -1 /home/circleci/artifacts/oracle)"
-            - run:
-                name: tar zip 
+                name: cp provider binary
                 command: |
-                    cd ../
-                    tar zcf ../terraform-provider-oraclerdbms.tar.gz . --exclude='./docker/lib/oracle/instantclient_12_2'
-                    mv ../terraform-provider-oraclerdbms.tar.gz docker/
-            - run:
-                name: unzip instantclient
-                command: |
-                    unzip -qq -n /home/circleci/artifacts/oracle/instantclient-basic-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
-                    unzip -qq -n /home/circleci/artifacts/oracle/instantclient-sdk-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
-                    cd lib/oracle/instantclient_12_2
-                    ln libclntsh.so.12.1 libclntsh.so
-                    ln libclntshcore.so.12.1 libclntshcore.so
-            - save_cache:
-                key: oracle-unzip-instantclient-v1-cache
-                paths:
-                    - lib/oracle/instantclient_12_2
+                    cp /go/bin/terraform-provider-oraclerdbms ./terraform-provider-oraclerdbms
             - run:
                 name: building oracle image
                 command: |
@@ -109,18 +92,54 @@ jobs:
                 name: push image to docker hub
                 command: |
                     docker push ba78/terraform-provider-oraclerdbms:"${TERRAFORM_PROVIDER_ORACLERDBMS}"
+    push-provider-binary:
+        docker:
+            - image: ba78/golang-oracle:0.0.2
+        working_directory: /go/bin
+        environment:
+            TERRAFORM_VERSION: 0.11.8
+            GO_VERSION: 1.11.1
+            ORACLE_INSTANT_CLIENT: 12.2.0.1.0
+            TERRAFORM_PROVIDER_ORACLERDBMS: 0.2.9
+        steps:
+            - restore_cache:
+                key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                key: v1-go-bin-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - run:
+                name: create scha256sum file
+                command: |
+                    sha256sum terraform-provider-oraclerdbms > terraform-provider-oraclerdbms_v${TERRAFORM_PROVIDER_ORACLERDBMS}.sha256
+            - run: 
+                name: login to gcloud
+                command: |
+                    echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+                    gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+                    gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+            - run:
+                name: cp provider & sha256sum file to google cloud storage
+                command: |
+                    gsutil cp terraform-provider-oraclerdbms gs://terraform-provider-oraclerdbms/linux_amd64/terraform-provider-oraclerdbms_v${TERRAFORM_PROVIDER_ORACLERDBMS}
+                    gsutil cp terraform-provider-oraclerdbms_v${TERRAFORM_PROVIDER_ORACLERDBMS}.sha256 gs://terraform-provider-oraclerdbms/linux_amd64/terraform-provider-oraclerdbms_v${TERRAFORM_PROVIDER_ORACLERDBMS}.sha256
 workflows:
   version: 2
   build-and-deploy:
     jobs:
         - checkout_code
-        - awscli_dependencies:
+        - build_terraform_provider_oraclerdbms:
             requires:
                 - checkout_code
-        - oracle_dependencies:
-            requires:
-                - checkout_code
-                - awscli_dependencies
         - build-oracle-image:
+            filters:
+                branches:
+                    only: master
             requires:
-                - oracle_dependencies
+                - build_terraform_provider_oraclerdbms
+                - checkout_code
+        - push-provider-binary:
+            filters:
+                branches:
+                    only: master
+            requires:
+                - build_terraform_provider_oraclerdbms
+                - checkout_code
