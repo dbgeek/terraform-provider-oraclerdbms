@@ -108,12 +108,12 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:b81f7c96bda42010bb13bc8afc2cfb2192d8f0c9dec17fe495bdf111a408a677"
+  digest = "1:4c368d5b9c53f38b6e7ba0202461b510c74f38ea46bee814b8284ee786c8f391"
   name = "github.com/dbgeek/terraform-oracle-rdbms-helper"
   packages = ["oraclehelper"]
   pruneopts = "UT"
-  revision = "e7ffd52c4b5896100aae91dcbf6850599f9d7029"
-  version = "v0.2.7"
+  revision = "fb4e279595c6b97135cb3816b0ecf3ce35ab1eda"
+  version = "v0.2.8"
 
 [[projects]]
   digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
@@ -340,6 +340,14 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "e3e58f4cc7971587a58f2610a3719f177d77cc65"
+
+[[projects]]
+  branch = "master"
+  digest = "1:267cbe7e1ac8eee922f32a2b96b161b8ae70b6ca749d31f3f536012ffc500528"
+  name = "github.com/mattrobenolt/size"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "9fdad82c8f2cfe2c6206f2e0cacf353b438af32a"
 
 [[projects]]
   digest = "1:dac0667a3fcdd4102a5da07abeddc89eb2f125b1e91af1ea9544c80eaff19c9a"

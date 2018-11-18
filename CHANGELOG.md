@@ -1,5 +1,9 @@
 # Terraform oraclerdbms provider changelog
 
+## 0.3.0 (November 18, 2018)
+
+* Bumping terraform-oracle-rdbms-helper to v0.2.8
+
 ## 0.2.9 (November 15, 2018)
 
 * Bumping terraform-oracle-rdbms-helper to v0.2.7
