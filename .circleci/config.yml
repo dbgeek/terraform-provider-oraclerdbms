@@ -23,10 +23,6 @@ jobs:
         docker:
             - image: ba78/golang-oracle:0.0.1
         working_directory: /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
-        environment:
-            LD_LIBRARY_PATH: /usr/lib/instantclient_12_2
-            ORACLE_HOME: /usr/lib/instantclient_12_2
-            PKG_CONFIG_PATH: /usr/lib/pkgconfig
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
