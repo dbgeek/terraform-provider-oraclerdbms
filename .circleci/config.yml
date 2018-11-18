@@ -88,6 +88,10 @@ jobs:
                 name: building oracle image
                 command: |
                     docker build -t ba78/terraform-provider-oraclerdbms:"${TERRAFORM_PROVIDER_ORACLERDBMS}" --build-arg TF_VERSION="${TERRAFORM_VERSION}" --build-arg GO_VERSION="${GO_VERSION}" --build-arg TERRAFORM_PROVIDER_ORACLERDBMS="${TERRAFORM_PROVIDER_ORACLERDBMS}" .
+            - run:
+                name: push image to docker hub
+                command: |
+                    docker push ba78/terraform-provider-oraclerdbms:"${TERRAFORM_PROVIDER_ORACLERDBMS}"
 workflows:
   version: 2
   build-and-deploy:
@@ -97,6 +101,9 @@ workflows:
             requires:
                 - checkout_code
         - build-oracle-image:
+            filters:	
+                branches:	
+                    only: master
             requires:
                 - build_terraform_provider_oraclerdbms
                 - checkout_code
