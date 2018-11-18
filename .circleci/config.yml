@@ -92,6 +92,25 @@ jobs:
                 name: push image to docker hub
                 command: |
                     docker push ba78/terraform-provider-oraclerdbms:"${TERRAFORM_PROVIDER_ORACLERDBMS}"
+    push-provider-binary:
+        docker: ba78/golang-oracle:0.0.2
+        working_directory: /go/bin
+        environment:
+            TERRAFORM_VERSION: 0.11.8
+            GO_VERSION: 1.11.1
+            ORACLE_INSTANT_CLIENT: 12.2.0.1.0
+            TERRAFORM_PROVIDER_ORACLERDBMS: 0.2.9
+        stepts:
+            - restore_cache:
+                    key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+                - restore_cache:
+                    key: v1-go-bin-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - run: 
+                name: login to gcloud
+                command: |
+                    echo $GCLOUD_SERVICE_KEY | base64 --decode | sudo gcloud auth activate-service-account --key-file=-
+                    sudo gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+                    sudo gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
 workflows:
   version: 2
   build-and-deploy:
@@ -104,6 +123,10 @@ workflows:
             filters:
                 branches:
                     only: master
+            requires:
+                - build_terraform_provider_oraclerdbms
+                - checkout_code
+        - push-provider-binary:
             requires:
                 - build_terraform_provider_oraclerdbms
                 - checkout_code
