@@ -63,7 +63,7 @@ jobs:
     build-oracle-image:
         docker:
             - image: ba78/golang-oracle:0.0.1
-        working_directory: /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
+        working_directory: /go/src/github.com/dbgeek/terraform-provider-oraclerdbms/docker
         environment:
             TERRAFORM_VERSION: 0.11.8
             GO_VERSION: 1.11.1
@@ -83,7 +83,7 @@ jobs:
             - run:
                 name: cp provider binary
                 command: |
-                    cp /go/bin/terraform-provider-oraclerdbms docker/terraform-provider-oraclerdbms/${TERRAFORM_VERSION}
+                    cp /go/bin/terraform-provider-oraclerdbms ./terraform-provider-oraclerdbms
             - run:
                 name: building oracle image
                 command: |
