@@ -30,10 +30,10 @@ jobs:
                 name: go install
                 command: |
                     go install
-            - run:
-                name: ls
-                command: |
-                    ls /go/bin
+            - save_cache:
+                key: v1-go-bin-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+                paths:
+                    - /go/bin
     oracle_dependencies:
         docker:
             - image: circleci/python:3.6-stretch-node-browsers-legacy
@@ -62,8 +62,8 @@ jobs:
                     - /home/circleci/artifacts/oracle
     build-oracle-image:
         docker:
-            - image: circleci/python:3.6-stretch-node-browsers-legacy
-        working_directory: ~/project/docker
+            - image: ba78/golang-oracle:0.0.1
+        working_directory: /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
         environment:
             TERRAFORM_VERSION: 0.11.8
             GO_VERSION: 1.11.1
@@ -73,10 +73,7 @@ jobs:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
-                key: oracle-unzip-instantclient-v1-cache
-            - restore_cache:
-                keys:
-                    - oracle-instantclient-v1-cache
+                key: v1-go-bin-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - setup_remote_docker:
                 docker_layer_caching: true
             - run: 
@@ -84,34 +81,13 @@ jobs:
                 command: |
                     docker login -u $DOCKER_USER -p $DOCKER_PASS
             - run:
-                name: ls /home/circleci/artifacts/oracle
-                command: echo "$(ls -1 /home/circleci/artifacts/oracle)"
-            - run:
-                name: tar zip 
+                name: cp provider binary
                 command: |
-                    cd ../
-                    tar zcf ../terraform-provider-oraclerdbms.tar.gz . --exclude='./docker/lib/oracle/instantclient_12_2'
-                    mv ../terraform-provider-oraclerdbms.tar.gz docker/
-            - run:
-                name: unzip instantclient
-                command: |
-                    unzip -qq -n /home/circleci/artifacts/oracle/instantclient-basic-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
-                    unzip -qq -n /home/circleci/artifacts/oracle/instantclient-sdk-linux.x64-"${ORACLE_INSTANT_CLIENT}".zip -d lib/oracle
-                    cd lib/oracle/instantclient_12_2
-                    ln libclntsh.so.12.1 libclntsh.so
-                    ln libclntshcore.so.12.1 libclntshcore.so
-            - save_cache:
-                key: oracle-unzip-instantclient-v1-cache
-                paths:
-                    - lib/oracle/instantclient_12_2
+                    cp /go/bin/terraform-provider-oraclerdbms docker/terraform-provider-oraclerdbms/${TERRAFORM_VERSION}"
             - run:
                 name: building oracle image
                 command: |
                     docker build -t ba78/terraform-provider-oraclerdbms:"${TERRAFORM_PROVIDER_ORACLERDBMS}" --build-arg TF_VERSION="${TERRAFORM_VERSION}" --build-arg GO_VERSION="${GO_VERSION}" --build-arg TERRAFORM_PROVIDER_ORACLERDBMS="${TERRAFORM_PROVIDER_ORACLERDBMS}" .
-            - run:
-                name: push image to docker hub
-                command: |
-                    docker push ba78/terraform-provider-oraclerdbms:"${TERRAFORM_PROVIDER_ORACLERDBMS}"
 workflows:
   version: 2
   build-and-deploy:
@@ -119,4 +95,8 @@ workflows:
         - checkout_code
         - build_terraform_provider_oraclerdbms:
             requires:
+                - checkout_code
+        - build-oracle-image:
+            requires:
+                - build_terraform_provider_oraclerdbms
                 - checkout_code
