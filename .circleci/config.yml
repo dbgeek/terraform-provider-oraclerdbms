@@ -138,7 +138,7 @@ workflows:
         - build-oracle-image:
             requires:
                 - oracle_dependencies
-        - push-on-master
+        - push-on-master:
             filters:
                 branches:
                     only: master
