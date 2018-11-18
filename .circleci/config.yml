@@ -6,11 +6,11 @@ jobs:
             - image: ba78/golang-oracle:0.0.1   
         steps:
             - checkout:
-                path:  /go/src/github.com/dbgeek
+                path:  /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
             - run:
                 name: list dir
                 command: |
-                    ls /root/project
+                    ls /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
             - run:
                 name: pwd dir
                 command: |
