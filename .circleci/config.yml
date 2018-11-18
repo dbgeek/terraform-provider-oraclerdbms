@@ -3,32 +3,21 @@ version: 2
 jobs:
     checkout_code:
         docker:
-            - image: ba78/golang-oracle:0.0.1
+            - image: ba78/golang-oracle:0.0.1   
         steps:
             - checkout
+            - run:
+                name: list dir
+                command: |
+                    ls /root/project
+            - run:
+                name: pwd dir
+                command: |
+                    pwd
             - save_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                 paths:
                     - ~/project
-    awscli_dependencies:
-        docker:
-            - image: circleci/python:3.6-stretch-node-browsers-legacy
-        working_directory: ~/
-        steps:
-            - restore_cache:
-                key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                key: awscli-{{ checksum "project/.circleci/requirements.txt" }}
-            - run:
-                name: setup dependencies
-                command: |
-                    python3 -m venv venv
-                    . venv/bin/activate
-                    pip install -r project/.circleci/requirements.txt
-            - save_cache: # special step to save dependency cache
-                key: awscli-{{ checksum "project/.circleci/requirements.txt" }}
-                paths:
-                    - "venv"
     oracle_dependencies:
         docker:
             - image: circleci/python:3.6-stretch-node-browsers-legacy
@@ -36,8 +25,6 @@ jobs:
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                key: awscli-{{ checksum "project/.circleci/requirements.txt" }}
             - restore_cache:
                 keys:
                     - oracle-instantclient-v1-cache
