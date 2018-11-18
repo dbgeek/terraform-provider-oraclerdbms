@@ -3,7 +3,7 @@ version: 2
 jobs:
     checkout_code:
         docker:
-            - image: ba78/golang-oracle:0.0.1   
+            - image: ba78/golang-oracle:0.0.1
         steps:
             - checkout:
                 path:  /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
@@ -18,7 +18,18 @@ jobs:
             - save_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                 paths:
-                    - ~/project
+                    - /go/src/github.com/dbgeek
+    build_terraform_provider_oraclerdbms:
+        docker:
+            - image: ba78/golang-oracle:0.0.1
+        working_directory: /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
+        steps:
+            - restore_cache:
+                key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - run:
+                name: go install
+                command: |
+                    go install
     oracle_dependencies:
         docker:
             - image: circleci/python:3.6-stretch-node-browsers-legacy
@@ -102,3 +113,6 @@ workflows:
   build-and-deploy:
     jobs:
         - checkout_code
+        - build_terraform_provider_oraclerdbms:
+            requires:
+                - checkout_code
