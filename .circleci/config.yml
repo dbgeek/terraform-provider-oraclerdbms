@@ -102,9 +102,9 @@ jobs:
             TERRAFORM_PROVIDER_ORACLERDBMS: 0.2.9
         stepts:
             - restore_cache:
-                    key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-                - restore_cache:
-                    key: v1-go-bin-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+                key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                key: v1-go-bin-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run: 
                 name: login to gcloud
                 command: |
