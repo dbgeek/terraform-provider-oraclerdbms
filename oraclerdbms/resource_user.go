@@ -185,13 +185,13 @@ func resourceOracleRdbmsUpdateUser(d *schema.ResourceData, meta interface{}) err
 		if d.Get("username").(string) != "" {
 			resourceUser.Username = d.Get("username").(string)
 		}
-		if d.Get("profile").(string) != "" {
+		if d.HasChange("profile") {
 			resourceUser.Profile = d.Get("profile").(string)
 		}
-		if d.Get("default_tablespace").(string) != "" {
+		if d.HasChange("default_tablespace") {
 			resourceUser.DefaultTablespace = d.Get("default_tablespace").(string)
 		}
-		if d.Get("temporary_tablespace").(string) != "" {
+		if d.HasChange("temporary_tablespace") {
 			resourceUser.TemporaryTablespace = d.Get("temporary_tablespace").(string)
 		}
 		if d.HasChange("account_status") {
