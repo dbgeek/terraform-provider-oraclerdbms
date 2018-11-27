@@ -21,14 +21,15 @@ type (
 	}
 	// Client fkfkkf
 	Client struct {
-		DBClient         *sql.DB
-		DBVersion        *version.Version
-		ParameterService *parameterService
-		ProfileService   *profileService
-		UserService      *userService
-		RoleService      *roleService
-		GrantService     *grantService
-		StatsService     *statsService
+		DBClient               *sql.DB
+		DBVersion              *version.Version
+		ParameterService       *parameterService
+		ProfileService         *profileService
+		UserService            *userService
+		RoleService            *roleService
+		GrantService           *grantService
+		StatsService           *statsService
+		SchedulerWindowService *schedulerWindowService
 	}
 )
 
@@ -82,6 +83,7 @@ func NewClient(cfg Cfg) *Client {
 	c.RoleService = &roleService{client: c}
 	c.GrantService = &grantService{client: c}
 	c.StatsService = &statsService{client: c}
+	c.SchedulerWindowService = &schedulerWindowService{client: c}
 	c.DBVersion, _ = version.NewVersion(dBVersion)
 	log.Printf("[DEBUG] dbversion: %v", c.DBVersion)
 

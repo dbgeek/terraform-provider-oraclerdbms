@@ -18,6 +18,9 @@ func resourceUser() *schema.Resource {
 			State: schema.ImportStatePassthrough,
 		},
 
+		SchemaVersion: 1,
+		MigrateState:  resourceOracleRdbmsUserMigrate,
+
 		Schema: map[string]*schema.Schema{
 			"username": &schema.Schema{
 				Type:     schema.TypeString,
@@ -27,10 +30,10 @@ func resourceUser() *schema.Resource {
 					return strings.ToUpper(val.(string))
 				},
 			},
-			"password": &schema.Schema{
-				Type:      schema.TypeString,
-				Required:  true,
-				Sensitive: true,
+			"account_status": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "OPEN",
 			},
 			"profile": &schema.Schema{
 				Type:     schema.TypeString,
@@ -56,6 +59,11 @@ func resourceUser() *schema.Resource {
 					return strings.ToUpper(val.(string))
 				},
 			},
+			"quota": &schema.Schema{
+				Type:     schema.TypeMap,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+			},
 		},
 	}
 }
@@ -68,8 +76,16 @@ func resourceOracleRdbmsCreateUser(d *schema.ResourceData, meta interface{}) err
 	if d.Get("username").(string) != "" {
 		user.Username = d.Get("username").(string)
 	}
-	if d.Get("password").(string) != "" {
-		user.Password = d.Get("password").(string)
+	if d.Get("account_status").(string) != "" {
+		v := d.Get("account_status").(string)
+		switch {
+		case v == "OPEN":
+			user.AccountStatus = "UNLOCK"
+		case v == "LOCKED":
+			user.AccountStatus = "LOCK"
+		case strings.HasPrefix(v, "EXPIRED"):
+			user.AccountStatus = "EXPIRED"
+		}
 	}
 	if d.Get("profile").(string) != "" {
 		user.Profile = d.Get("profile").(string)
@@ -79,6 +95,13 @@ func resourceOracleRdbmsCreateUser(d *schema.ResourceData, meta interface{}) err
 	}
 	if d.Get("temporary_tablespace").(string) != "" {
 		user.TemporaryTablespace = d.Get("temporary_tablespace").(string)
+	}
+	quotaMap := map[string]string{}
+	if v, ok := d.GetOk("quota"); ok {
+		for key, value := range v.(map[string]interface{}) {
+			quotaMap[key] = value.(string)
+		}
+		user.Quota = quotaMap
 	}
 	client.UserService.CreateUser(user)
 
@@ -110,7 +133,7 @@ func resourceOracleRdbmsReadUser(d *schema.ResourceData, meta interface{}) error
 	user, err := client.UserService.ReadUser(resourceUser)
 	log.Printf("[DEBUG] Resource read user user: %v\n", user)
 	if err != nil {
-		log.Println("exit error not nil")
+		log.Printf("[ERROR] readuser failed: %v\n", err)
 		d.SetId("")
 		return nil
 	}
@@ -128,6 +151,16 @@ func resourceOracleRdbmsReadUser(d *schema.ResourceData, meta interface{}) error
 	if user.Username != "" {
 		d.Set("username", user.Username)
 	}
+	if user.AccountStatus != "" {
+		switch {
+		case user.AccountStatus == "OPEN":
+			d.Set("account_status", user.AccountStatus)
+		case user.AccountStatus == "LOCKED":
+			d.Set("account_status", user.AccountStatus)
+		case strings.HasPrefix(user.AccountStatus, "EXPIRED"):
+			d.Set("account_status", "EXPIRED")
+		}
+	}
 	if user.DefaultTablespace != "" {
 		d.Set("default_tablespace", user.DefaultTablespace)
 	}
@@ -136,6 +169,9 @@ func resourceOracleRdbmsReadUser(d *schema.ResourceData, meta interface{}) error
 	}
 	if user.Profile != "" {
 		d.Set("profile", user.Profile)
+	}
+	if len(user.Quota) > 0 {
+		d.Set("quota", user.Quota)
 	}
 
 	return nil
@@ -149,14 +185,32 @@ func resourceOracleRdbmsUpdateUser(d *schema.ResourceData, meta interface{}) err
 		if d.Get("username").(string) != "" {
 			resourceUser.Username = d.Get("username").(string)
 		}
-		if d.Get("profile").(string) != "" {
+		if d.HasChange("profile") {
 			resourceUser.Profile = d.Get("profile").(string)
 		}
-		if d.Get("default_tablespace").(string) != "" {
+		if d.HasChange("default_tablespace") {
 			resourceUser.DefaultTablespace = d.Get("default_tablespace").(string)
 		}
-		if d.Get("temporary_tablespace").(string) != "" {
+		if d.HasChange("temporary_tablespace") {
 			resourceUser.TemporaryTablespace = d.Get("temporary_tablespace").(string)
+		}
+		if d.HasChange("account_status") {
+			v := d.Get("account_status").(string)
+			switch {
+			case v == "OPEN":
+				resourceUser.AccountStatus = "UNLOCK"
+			case v == "LOCKED":
+				resourceUser.AccountStatus = "LOCK"
+			case strings.HasPrefix(v, "EXPIRED"):
+				resourceUser.AccountStatus = "EXPIRED"
+			}
+		}
+		quotaMap := map[string]string{}
+		if v, ok := d.GetOk("quota"); ok {
+			for key, value := range v.(map[string]interface{}) {
+				quotaMap[key] = value.(string)
+			}
+			resourceUser.Quota = quotaMap
 		}
 		client.UserService.ModifyUser(resourceUser)
 	}

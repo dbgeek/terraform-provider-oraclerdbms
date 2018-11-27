@@ -108,12 +108,12 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:b81f7c96bda42010bb13bc8afc2cfb2192d8f0c9dec17fe495bdf111a408a677"
+  digest = "1:602b59bc90a26f3d18d5123497b2b7d57a3da5f2f9de82fda3ddf61ef5b55ee2"
   name = "github.com/dbgeek/terraform-oracle-rdbms-helper"
   packages = ["oraclehelper"]
   pruneopts = "UT"
-  revision = "e7ffd52c4b5896100aae91dcbf6850599f9d7029"
-  version = "v0.2.7"
+  revision = "5d824afd687263fc7c32dd6b3ca181684e2e0296"
+  version = "v0.2.8.1"
 
 [[projects]]
   digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
@@ -267,7 +267,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:384d072f07554b99d2d823d4a4f01b1dbc52055f9b7af59f9a16ffa9f36f60c5"
+  digest = "1:09e22b6885506b66790375278300396abf3a899104ff9e6b59e1674b9d48154a"
   name = "github.com/hashicorp/terraform"
   packages = [
     "config",
@@ -276,6 +276,7 @@
     "config/module",
     "dag",
     "flatmap",
+    "helper/acctest",
     "helper/config",
     "helper/hashcode",
     "helper/hilmapstructure",
@@ -340,6 +341,14 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "e3e58f4cc7971587a58f2610a3719f177d77cc65"
+
+[[projects]]
+  branch = "master"
+  digest = "1:267cbe7e1ac8eee922f32a2b96b161b8ae70b6ca749d31f3f536012ffc500528"
+  name = "github.com/mattrobenolt/size"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "9fdad82c8f2cfe2c6206f2e0cacf353b438af32a"
 
 [[projects]]
   digest = "1:dac0667a3fcdd4102a5da07abeddc89eb2f125b1e91af1ea9544c80eaff19c9a"
@@ -457,18 +466,25 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:fc3e1f838b92bf8686f808fb62f35e35f18f1fcfc99841c30cc189593bb6695d"
+  digest = "1:ea40c9770d6a072b2dd6dd0a7d815683e8b5b80f3dd156054cc7ac6200fe3856"
   name = "golang.org/x/crypto"
   packages = [
     "bcrypt",
     "blowfish",
     "cast5",
+    "curve25519",
+    "ed25519",
+    "ed25519/internal/edwards25519",
+    "internal/chacha20",
+    "internal/subtle",
     "openpgp",
     "openpgp/armor",
     "openpgp/elgamal",
     "openpgp/errors",
     "openpgp/packet",
     "openpgp/s2k",
+    "poly1305",
+    "ssh",
   ]
   pruneopts = "UT"
   revision = "0c41d7ab0a0ee717d4590a44bcb987dfd9e183eb"

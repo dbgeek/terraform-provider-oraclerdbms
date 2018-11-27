@@ -49,7 +49,6 @@ resource "oraclerdbms_grant_system_privilege" "grantsysprivs" {
 }
 resource "oraclerdbms_user" "usersyspriv" {
 	username = "USER999"
-	password = "change_on_install"
 	default_tablespace = "USERS"
 }
 `
