@@ -1,8 +1,11 @@
 # Terraform oraclerdbms provider changelog
 
-## 0.3.0 (November 18, 2018)
+## 0.3.0 (November 27, 2018)
 
-* Bumping terraform-oracle-rdbms-helper to v0.2.8
+* Bumping terraform-oracle-rdbms-helper to v0.2.8.1
+* Adding support for user account_status , open, locked, expired
+* Adding support for user resource quota
+* Removing password attribute from resource user
 
 ## 0.2.9 (November 15, 2018)
 
