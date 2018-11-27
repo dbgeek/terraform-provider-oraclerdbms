@@ -71,6 +71,16 @@ func resourceOracleRdbmsCreateUser(d *schema.ResourceData, meta interface{}) err
 	if d.Get("username").(string) != "" {
 		user.Username = d.Get("username").(string)
 	}
+	if d.Get("account_status").(string) != "" {
+		v := d.Get("account_status").(string)
+		switch {
+		case v == "OPEN":
+			user.AccountStatus = "UNLOCK"
+		case v == "LOCKED":
+			user.AccountStatus = "LOCK"
+		case strings.HasPrefix(v, "EXPIRED"):
+			user.AccountStatus = "EXPIRED"
+		}
 	}
 	if d.Get("profile").(string) != "" {
 		user.Profile = d.Get("profile").(string)
@@ -129,6 +139,16 @@ func resourceOracleRdbmsReadUser(d *schema.ResourceData, meta interface{}) error
 	if user.Username != "" {
 		d.Set("username", user.Username)
 	}
+	if user.AccountStatus != "" {
+		switch {
+		case user.AccountStatus == "OPEN":
+			d.Set("account_status", user.AccountStatus)
+		case user.AccountStatus == "LOCKED":
+			d.Set("account_status", user.AccountStatus)
+		case strings.HasPrefix(user.AccountStatus, "EXPIRED"):
+			d.Set("account_status", "EXPIRED")
+		}
+	}
 	if user.DefaultTablespace != "" {
 		d.Set("default_tablespace", user.DefaultTablespace)
 	}
@@ -158,6 +178,17 @@ func resourceOracleRdbmsUpdateUser(d *schema.ResourceData, meta interface{}) err
 		}
 		if d.Get("temporary_tablespace").(string) != "" {
 			resourceUser.TemporaryTablespace = d.Get("temporary_tablespace").(string)
+		}
+		if d.HasChange("account_status") {
+			v := d.Get("account_status").(string)
+			switch {
+			case v == "OPEN":
+				resourceUser.AccountStatus = "UNLOCK"
+			case v == "LOCKED":
+				resourceUser.AccountStatus = "LOCK"
+			case strings.HasPrefix(v, "EXPIRED"):
+				resourceUser.AccountStatus = "EXPIRED"
+			}
 		}
 		client.UserService.ModifyUser(resourceUser)
 	}
