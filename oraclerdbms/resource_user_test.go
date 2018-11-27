@@ -22,6 +22,8 @@ func TestAccUser(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("oraclerdbms_user.test", "default_tablespace", "SYSTEM"),
 					resource.TestCheckResourceAttr("oraclerdbms_user.test", "account_status", "LOCKED"),
+					resource.TestCheckResourceAttr("oraclerdbms_user.test", "quota.%", "1"),
+					resource.TestCheckResourceAttr("oraclerdbms_user.test", "quota.SYSTEM", "10M"),
 				),
 			},
 		},
