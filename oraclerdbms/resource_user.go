@@ -133,7 +133,7 @@ func resourceOracleRdbmsReadUser(d *schema.ResourceData, meta interface{}) error
 	user, err := client.UserService.ReadUser(resourceUser)
 	log.Printf("[DEBUG] Resource read user user: %v\n", user)
 	if err != nil {
-		log.Println("exit error not nil")
+		log.Printf("[ERROR] readuser failed: %v\n", err)
 		d.SetId("")
 		return nil
 	}
