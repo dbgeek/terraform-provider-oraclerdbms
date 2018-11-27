@@ -48,7 +48,6 @@ resource "oraclerdbms_grant_role_privilege" "grantroleprivs" {
 }
 resource "oraclerdbms_user" "userrolepriv" {
 	username = "USERROLEPRIVS"
-	password = "change_on_install"
 	default_tablespace = "USERS"
 }
 

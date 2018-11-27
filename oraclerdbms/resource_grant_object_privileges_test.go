@@ -106,7 +106,6 @@ func testAccGrantObjPrivsOnSchemaConfigBasicDiff() string {
 	}
 	resource "oraclerdbms_user" "userobjpriv2" {
 		username = "USER99"
-		password = "change_on_install"
 		default_tablespace = "USERS"
 	}
 	`
@@ -123,7 +122,6 @@ resource "oraclerdbms_grant_object_privilege" "grantobjtest" {
 }
 resource "oraclerdbms_user" "userobjpriv" {
 	username = "USER999"
-	password = "change_on_install"
 	default_tablespace = "USERS"
 }
 `
@@ -138,7 +136,6 @@ resource "oraclerdbms_grant_object_privilege" "grantobjtest" {
 }
 resource "oraclerdbms_user" "userobjpriv" {
 	username = "USER999"
-	password = "change_on_install"
 	default_tablespace = "USERS"
 }
 `
@@ -151,7 +148,6 @@ resource "oraclerdbms_grant_object_privilege" "grantobjschematest" {
 }
 resource "oraclerdbms_user" "userobjpriv2" {
 	username = "USER99"
-	password = "change_on_install"
 	default_tablespace = "USERS"
 }
 `
@@ -165,7 +161,6 @@ resource "oraclerdbms_grant_object_privilege" "grantobjschematest" {
 }
 resource "oraclerdbms_user" "userobjpriv2" {
 	username = "USER99"
-	password = "change_on_install"
 	default_tablespace = "USERS"
 }
 `

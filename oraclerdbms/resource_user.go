@@ -18,6 +18,9 @@ func resourceUser() *schema.Resource {
 			State: schema.ImportStatePassthrough,
 		},
 
+		SchemaVersion: 1,
+		MigrateState:  resourceOracleRdbmsUserMigrate,
+
 		Schema: map[string]*schema.Schema{
 			"username": &schema.Schema{
 				Type:     schema.TypeString,
@@ -27,10 +30,10 @@ func resourceUser() *schema.Resource {
 					return strings.ToUpper(val.(string))
 				},
 			},
-			"password": &schema.Schema{
-				Type:      schema.TypeString,
-				Required:  true,
-				Sensitive: true,
+			"account_status": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "OPEN",
 			},
 			"profile": &schema.Schema{
 				Type:     schema.TypeString,
@@ -68,8 +71,6 @@ func resourceOracleRdbmsCreateUser(d *schema.ResourceData, meta interface{}) err
 	if d.Get("username").(string) != "" {
 		user.Username = d.Get("username").(string)
 	}
-	if d.Get("password").(string) != "" {
-		user.Password = d.Get("password").(string)
 	}
 	if d.Get("profile").(string) != "" {
 		user.Profile = d.Get("profile").(string)
