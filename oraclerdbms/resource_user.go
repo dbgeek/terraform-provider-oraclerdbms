@@ -59,6 +59,11 @@ func resourceUser() *schema.Resource {
 					return strings.ToUpper(val.(string))
 				},
 			},
+			"quota": &schema.Schema{
+				Type:     schema.TypeMap,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+			},
 		},
 	}
 }
@@ -90,6 +95,13 @@ func resourceOracleRdbmsCreateUser(d *schema.ResourceData, meta interface{}) err
 	}
 	if d.Get("temporary_tablespace").(string) != "" {
 		user.TemporaryTablespace = d.Get("temporary_tablespace").(string)
+	}
+	quotaMap := map[string]string{}
+	if v, ok := d.GetOk("quota"); ok {
+		for key, value := range v.(map[string]interface{}) {
+			quotaMap[key] = value.(string)
+		}
+		user.Quota = quotaMap
 	}
 	client.UserService.CreateUser(user)
 
@@ -158,6 +170,9 @@ func resourceOracleRdbmsReadUser(d *schema.ResourceData, meta interface{}) error
 	if user.Profile != "" {
 		d.Set("profile", user.Profile)
 	}
+	if len(user.Quota) > 0 {
+		d.Set("quota", user.Quota)
+	}
 
 	return nil
 }
@@ -189,6 +204,13 @@ func resourceOracleRdbmsUpdateUser(d *schema.ResourceData, meta interface{}) err
 			case strings.HasPrefix(v, "EXPIRED"):
 				resourceUser.AccountStatus = "EXPIRED"
 			}
+		}
+		quotaMap := map[string]string{}
+		if v, ok := d.GetOk("quota"); ok {
+			for key, value := range v.(map[string]interface{}) {
+				quotaMap[key] = value.(string)
+			}
+			resourceUser.Quota = quotaMap
 		}
 		client.UserService.ModifyUser(resourceUser)
 	}
