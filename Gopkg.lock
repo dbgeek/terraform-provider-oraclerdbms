@@ -108,12 +108,12 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:4c368d5b9c53f38b6e7ba0202461b510c74f38ea46bee814b8284ee786c8f391"
+  digest = "1:602b59bc90a26f3d18d5123497b2b7d57a3da5f2f9de82fda3ddf61ef5b55ee2"
   name = "github.com/dbgeek/terraform-oracle-rdbms-helper"
   packages = ["oraclehelper"]
   pruneopts = "UT"
-  revision = "fb4e279595c6b97135cb3816b0ecf3ce35ab1eda"
-  version = "v0.2.8"
+  revision = "5d824afd687263fc7c32dd6b3ca181684e2e0296"
+  version = "v0.2.8.1"
 
 [[projects]]
   digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
@@ -267,7 +267,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:384d072f07554b99d2d823d4a4f01b1dbc52055f9b7af59f9a16ffa9f36f60c5"
+  digest = "1:09e22b6885506b66790375278300396abf3a899104ff9e6b59e1674b9d48154a"
   name = "github.com/hashicorp/terraform"
   packages = [
     "config",
@@ -276,6 +276,7 @@
     "config/module",
     "dag",
     "flatmap",
+    "helper/acctest",
     "helper/config",
     "helper/hashcode",
     "helper/hilmapstructure",
@@ -465,18 +466,25 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:fc3e1f838b92bf8686f808fb62f35e35f18f1fcfc99841c30cc189593bb6695d"
+  digest = "1:ea40c9770d6a072b2dd6dd0a7d815683e8b5b80f3dd156054cc7ac6200fe3856"
   name = "golang.org/x/crypto"
   packages = [
     "bcrypt",
     "blowfish",
     "cast5",
+    "curve25519",
+    "ed25519",
+    "ed25519/internal/edwards25519",
+    "internal/chacha20",
+    "internal/subtle",
     "openpgp",
     "openpgp/armor",
     "openpgp/elgamal",
     "openpgp/errors",
     "openpgp/packet",
     "openpgp/s2k",
+    "poly1305",
+    "ssh",
   ]
   pruneopts = "UT"
   revision = "0c41d7ab0a0ee717d4590a44bcb987dfd9e183eb"

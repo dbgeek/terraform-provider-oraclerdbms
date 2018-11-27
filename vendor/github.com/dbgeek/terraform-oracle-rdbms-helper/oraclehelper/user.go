@@ -2,6 +2,7 @@ package oraclehelper
 
 import (
 	"fmt"
+	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/mattrobenolt/size"
 	"log"
 )
@@ -31,7 +32,6 @@ type (
 	//ResourceUser ..
 	ResourceUser struct {
 		Username            string
-		Password            string
 		DefaultTablespace   string
 		TemporaryTablespace string
 		Profile             string
@@ -41,7 +41,6 @@ type (
 	//User ..
 	User struct {
 		Username            string
-		Password            string
 		DefaultTablespace   string
 		TemporaryTablespace string
 		Profile             string
@@ -98,7 +97,8 @@ func (u *userService) ReadUser(tf ResourceUser) (*User, error) {
 
 func (u *userService) CreateUser(tf ResourceUser) error {
 	log.Println("[DEBUG] CreateUser")
-	sqlCommand := fmt.Sprintf("create user %s identified by change_on_install", tf.Username)
+	password := acctest.RandStringFromCharSet(20, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuwxyz")
+	sqlCommand := fmt.Sprintf("create user %s identified by %s", tf.Username, password)
 
 	if tf.DefaultTablespace != "" {
 		sqlCommand += fmt.Sprintf(" default tablespace %s", tf.DefaultTablespace)
@@ -107,7 +107,11 @@ func (u *userService) CreateUser(tf ResourceUser) error {
 		sqlCommand += fmt.Sprintf(" temporary tablespace %s", tf.TemporaryTablespace)
 	}
 	if tf.AccountStatus != "" {
-		sqlCommand += fmt.Sprintf(" account %s", tf.AccountStatus)
+		if tf.AccountStatus == "EXPIRED" {
+			sqlCommand += " password expire"
+		} else {
+			sqlCommand += fmt.Sprintf(" account %s", tf.AccountStatus)
+		}
 	}
 	if tf.Profile != "" {
 		sqlCommand += fmt.Sprintf(" profile %s", tf.Profile)
@@ -139,7 +143,11 @@ func (u *userService) ModifyUser(tf ResourceUser) error {
 		sqlCommand += fmt.Sprintf(" temporary tablespace %s", tf.TemporaryTablespace)
 	}
 	if tf.AccountStatus != "" {
-		sqlCommand += fmt.Sprintf(" account %s", tf.AccountStatus)
+		if tf.AccountStatus == "EXPIRED" {
+			sqlCommand += " password expire"
+		} else {
+			sqlCommand += fmt.Sprintf(" account %s", tf.AccountStatus)
+		}
 	}
 	if tf.Profile != "" {
 		sqlCommand += fmt.Sprintf(" profile %s", tf.Profile)
