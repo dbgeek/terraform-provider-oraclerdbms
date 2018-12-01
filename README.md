@@ -42,7 +42,6 @@ resource "oraclerdbms_profile_limit" "test1" {
 
 resource "oraclerdbms_user" "testuser" {
   username            = "TESTUSER"
-  password            = "change_on_install"
   default_tablespace  = "USERS"
   profile             = "${oraclerdbms_profile.test.id}
 }
