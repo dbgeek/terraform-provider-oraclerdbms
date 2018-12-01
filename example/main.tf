@@ -34,3 +34,10 @@ resource "oraclerdbms_stats" "granularity_auto" {
   preference_name  = "GRANULARITY"
   preference_value = "AUTO"
 }
+
+resource "oraclerdbms_parameter" "testatistics_levelst" {
+  name           = "statistics_level"
+  value          = "ALL"
+  update_comment = "setting statistics level to all"
+  scope          = "BOTH"
+}
