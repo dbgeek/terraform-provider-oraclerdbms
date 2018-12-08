@@ -1,5 +1,10 @@
 # Terraform oraclerdbms provider changelog
 
+## 0.3.1 (December, 08, 2018)
+
+* Adding database resource to handle force logging and flashback
+* Adding autotask resource to enable/disable sql tuning advisor, auto optimizer stats collection, auto space advisor
+
 ## 0.3.0 (November 27, 2018)
 
 * Bumping terraform-oracle-rdbms-helper to v0.2.8.1
