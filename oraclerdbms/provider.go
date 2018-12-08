@@ -67,6 +67,7 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
+			"oraclerdbms_database":               resourceDatabase(),
 			"oraclerdbms_grant_object_privilege": resourceGrantObjectPrivilege(),
 			"oraclerdbms_grant_role_privilege":   resourceGrantRolePrivilege(),
 			"oraclerdbms_grant_system_privilege": resourceGrantSystemPrivilege(),
