@@ -24,18 +24,10 @@ jobs:
             - image: ba78/golang-oracle:0.0.3
         working_directory: /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
         environment:
-            GO111MODULE: "on"
+            GO111MODULE: "OFF"
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-            - run:
-                name: debug package
-                command: |
-                    curl -L "https://howett.net/plist?go-get=1"
-            - run:
-                name: ls -l go mod
-                command: |
-                    ls -l /go
             - run:
                 name: go install
                 command: |
