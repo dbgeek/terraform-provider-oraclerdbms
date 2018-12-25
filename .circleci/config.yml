@@ -33,9 +33,9 @@ jobs:
                 command: |
                     curl -L "https://howett.net/plist?go-get=1"
             - run:
-                name: Go get 
+                name: ls -l go mod
                 command: |
-                    go get -u howett.net/plist
+                    ls -l /go/pkg/mod
             - run:
                 name: go install
                 command: |
