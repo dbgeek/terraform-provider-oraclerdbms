@@ -21,17 +21,18 @@ type (
 	}
 	// Client fkfkkf
 	Client struct {
-		DBClient               *sql.DB
-		DBVersion              *version.Version
-		ParameterService       *parameterService
-		ProfileService         *profileService
-		UserService            *userService
-		RoleService            *roleService
-		GrantService           *grantService
-		StatsService           *statsService
-		SchedulerWindowService *schedulerWindowService
-		AutoTaskService        *autoTaskService
-		DatabaseService        *databaseService
+		DBClient                   *sql.DB
+		DBVersion                  *version.Version
+		ParameterService           *parameterService
+		ProfileService             *profileService
+		UserService                *userService
+		RoleService                *roleService
+		GrantService               *grantService
+		StatsService               *statsService
+		SchedulerWindowService     *schedulerWindowService
+		AutoTaskService            *autoTaskService
+		DatabaseService            *databaseService
+		BlockChangeTrackingService *blockChangeTrackingService
 	}
 )
 
@@ -79,6 +80,7 @@ func NewClient(cfg Cfg) *Client {
 	}
 
 	c := &Client{DBClient: db}
+	c.BlockChangeTrackingService = &blockChangeTrackingService{client: c}
 	c.ParameterService = &parameterService{client: c}
 	c.ProfileService = &profileService{client: c}
 	c.UserService = &userService{client: c}

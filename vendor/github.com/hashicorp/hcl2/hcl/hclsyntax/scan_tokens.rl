@@ -16,10 +16,15 @@ import (
 }%%
 
 func scanTokens(data []byte, filename string, start hcl.Pos, mode scanMode) []Token {
+    stripData := stripUTF8BOM(data)
+    start.Byte += len(data) - len(stripData)
+    data = stripData
+
     f := &tokenAccum{
-        Filename: filename,
-        Bytes:    data,
-        Pos:      start,
+        Filename:  filename,
+        Bytes:     data,
+        Pos:       start,
+        StartByte: start.Byte,
     }
 
     %%{
