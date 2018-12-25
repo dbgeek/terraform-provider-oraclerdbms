@@ -24,7 +24,7 @@ jobs:
             - image: ba78/golang-oracle:0.0.2
         working_directory: /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
         environment:
-            GO111MODULE: on
+            GO111MODULE: "on"
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
@@ -71,7 +71,7 @@ jobs:
             GO_VERSION: 1.11.1
             ORACLE_INSTANT_CLIENT: 12.2.0.1.0
             TERRAFORM_PROVIDER_ORACLERDBMS: 0.3.1
-            GO111MODULE: on
+            GO111MODULE: "on"
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
