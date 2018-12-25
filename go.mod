@@ -1,17 +1,19 @@
 module github.com/dbgeek/terraform-provider-oraclerdbms
 
 require (
+	cloud.google.com/go v0.34.0 // indirect
 	github.com/apparentlymart/go-cidr v1.0.0 // indirect
 	github.com/armon/go-radix v1.0.0 // indirect
-	github.com/aws/aws-sdk-go v1.16.1 // indirect
+	github.com/aws/aws-sdk-go v1.16.11 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/dbgeek/terraform-oracle-rdbms-helper v0.3.0
-	github.com/hashicorp/go-getter v0.0.0-20181119194526-bd1edc22f8ea // indirect
+	github.com/golang/mock v1.2.0 // indirect
+	github.com/hashicorp/go-getter v0.0.0-20181213035916-be39683deade // indirect
 	github.com/hashicorp/go-hclog v0.0.0-20181001195459-61d530d6c27f // indirect
-	github.com/hashicorp/go-plugin v0.0.0-20181030172320-54b6ff97d818 // indirect
+	github.com/hashicorp/go-plugin v0.0.0-20181212150838-f444068e8f5a // indirect
 	github.com/hashicorp/go-uuid v1.0.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/hashicorp/hcl2 v0.0.0-20181206005933-df9794be1f23 // indirect
+	github.com/hashicorp/hcl2 v0.0.0-20181220012050-6631d7cd0a68 // indirect
 	github.com/hashicorp/hil v0.0.0-20170627220502-fa9f258a9250 // indirect
 	github.com/hashicorp/logutils v1.0.0 // indirect
 	github.com/hashicorp/terraform v0.11.11
@@ -24,9 +26,18 @@ require (
 	github.com/mitchellh/hashstructure v1.0.0 // indirect
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
 	github.com/posener/complete v1.2.1 // indirect
+	github.com/spf13/pflag v1.0.3 // indirect
+	github.com/vmihailenco/msgpack v4.0.1+incompatible // indirect
+	github.com/zclconf/go-cty v0.0.0-20181218225846-4fe1e489ee06 // indirect
 	golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9 // indirect
-	golang.org/x/net v0.0.0-20181207154023-610586996380 // indirect
-	golang.org/x/sys v0.0.0-20181206074257-70b957f3b65e // indirect
-	google.golang.org/genproto v0.0.0-20181202183823-bd91e49a0898 // indirect
+	golang.org/x/lint v0.0.0-20181217174547-8f45f776aaf1 // indirect
+	golang.org/x/net v0.0.0-20181220203305-927f97764cc3 // indirect
+	golang.org/x/oauth2 v0.0.0-20181203162652-d668ce993890 // indirect
+	golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4 // indirect
+	golang.org/x/sys v0.0.0-20181221143128-b4a75ba826a6 // indirect
+	golang.org/x/tools v0.0.0-20181221235234-d00ac6d27372 // indirect
+	google.golang.org/appengine v1.4.0 // indirect
+	google.golang.org/genproto v0.0.0-20181221175505-bd9b4fb69e2f // indirect
 	google.golang.org/grpc v1.17.0 // indirect
+	honnef.co/go/tools v0.0.0-20180920025451-e3ad64cb4ed3 // indirect
 )
