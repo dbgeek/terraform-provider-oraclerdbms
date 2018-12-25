@@ -64,17 +64,17 @@ resource "oraclerdbms_grant_role_privilege" "grantroleprivs" {
 Building The Provider
 ---------------------
 
-Clone repository to: `$GOPATH/src/github.com/terraform-providers/terraform-provider-oraclerdbms`
+Clone repository to: `$GOPATH/src/github.com/dbgeek/terraform-provider-oraclerdbms`
 
 ```sh
-$ mkdir -p $GOPATH/src/github.com/terraform-providers; cd $GOPATH/src/github.com/terraform-providers
-$ git clone git@github.com:terraform-providers/terraform-provider-oraclerdbms
+$ mkdir -p $GOPATH/src/github.com/dbgeek/terraform-provider-oraclerdbms; cd $GOPATH/src/github.com/dbgeek
+$ git clone git@github.com:dbgeek/terraform-provider-oraclerdbms
 ```
 
 Enter the provider directory and build the provider
 
 ```sh
-$ cd $GOPATH/src/github.com/terraform-providers/terraform-provider-oraclerdbms
+$ cd $GOPATH/src/github.com/dbgeek/terraform-provider-oraclerdbms
 $ make build
 ```
 
