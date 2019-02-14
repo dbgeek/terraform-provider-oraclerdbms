@@ -3,7 +3,7 @@ version: 2
 jobs:
     checkout_code:
         docker:
-            - image: ba78/golang-oracle:0.0.2
+            - image: ba78/golang-oracle:0.0.4
         steps:
             - checkout:
                 path:  /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
@@ -21,8 +21,10 @@ jobs:
                     - /go/src/github.com/dbgeek
     build_terraform_provider_oraclerdbms:
         docker:
-            - image: ba78/golang-oracle:0.0.2
+            - image: ba78/golang-oracle:0.0.4
         working_directory: /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
+        environment:
+            GO111MODULE: "on"
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
@@ -62,13 +64,14 @@ jobs:
                     - /home/circleci/artifacts/oracle
     build-oracle-image:
         docker:
-            - image: ba78/golang-oracle:0.0.2
+            - image: ba78/golang-oracle:0.0.4
         working_directory: /go/src/github.com/dbgeek/terraform-provider-oraclerdbms/docker
         environment:
             TERRAFORM_VERSION: 0.11.8
             GO_VERSION: 1.11.1
             ORACLE_INSTANT_CLIENT: 12.2.0.1.0
             TERRAFORM_PROVIDER_ORACLERDBMS: 0.3.1
+            GO111MODULE: "on"
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
@@ -94,13 +97,13 @@ jobs:
                     docker push ba78/terraform-provider-oraclerdbms:"${TERRAFORM_PROVIDER_ORACLERDBMS}"
     push-provider-binary:
         docker:
-            - image: ba78/golang-oracle:0.0.2
+            - image: ba78/golang-oracle:0.0.4
         working_directory: /go/bin
         environment:
             TERRAFORM_VERSION: 0.11.8
             GO_VERSION: 1.11.1
             ORACLE_INSTANT_CLIENT: 12.2.0.1.0
-            TERRAFORM_PROVIDER_ORACLERDBMS: 0.3.1
+            TERRAFORM_PROVIDER_ORACLERDBMS: 0.3.2
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
