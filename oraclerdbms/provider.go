@@ -68,6 +68,7 @@ func Provider() terraform.ResourceProvider {
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"oraclerdbms_autotask":               resourceAutotask(),
+			"oraclerdbms_block_change_tracking":  resourceBlockChangeTracking(),
 			"oraclerdbms_database":               resourceDatabase(),
 			"oraclerdbms_grant_object_privilege": resourceGrantObjectPrivilege(),
 			"oraclerdbms_grant_role_privilege":   resourceGrantRolePrivilege(),

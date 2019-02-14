@@ -1,5 +1,11 @@
 # Terraform oraclerdbms provider changelog
 
+## 0.3.2 (February, 14, 2019)
+
+* Bumping terraform-oracle-rdbms-helper to v0.3.1
+* Add resource oraclerdbms_block_change_tracking.
+  * Does not support OMF.
+
 ## 0.3.1 (December, 08, 2018)
 
 * Adding database resource to handle force logging and flashback
