@@ -49,7 +49,7 @@ github.com/bgentry/speakeasy
 github.com/blang/semver
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
-# github.com/dbgeek/terraform-oracle-rdbms-helper v0.3.0
+# github.com/dbgeek/terraform-oracle-rdbms-helper v0.3.1
 github.com/dbgeek/terraform-oracle-rdbms-helper/oraclehelper
 # github.com/fatih/color v1.7.0
 github.com/fatih/color
@@ -82,7 +82,7 @@ github.com/hashicorp/go-plugin/internal/proto
 github.com/hashicorp/go-safetemp
 # github.com/hashicorp/go-uuid v1.0.0
 github.com/hashicorp/go-uuid
-# github.com/hashicorp/go-version v1.0.0
+# github.com/hashicorp/go-version v1.1.0
 github.com/hashicorp/go-version
 # github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
@@ -146,8 +146,6 @@ github.com/jmespath/go-jmespath
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.4
 github.com/mattn/go-isatty
-# github.com/mattn/go-oci8 v0.0.0-20181219054606-247e199a1d6b
-github.com/mattn/go-oci8
 # github.com/mattrobenolt/size v0.0.0-20150321023249-9fdad82c8f2c
 github.com/mattrobenolt/size
 # github.com/mitchellh/cli v1.0.0
@@ -168,6 +166,8 @@ github.com/mitchellh/mapstructure
 github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 github.com/oklog/run
+# github.com/pkg/errors v0.8.1
+github.com/pkg/errors
 # github.com/posener/complete v1.2.1
 github.com/posener/complete
 github.com/posener/complete/cmd/install
@@ -186,7 +186,7 @@ github.com/zclconf/go-cty/cty/function/stdlib
 github.com/zclconf/go-cty/cty/set
 github.com/zclconf/go-cty/cty/gocty
 github.com/zclconf/go-cty/cty/json
-# golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9
+# golang.org/x/crypto v0.0.0-20190211182817-74369b46fc67
 golang.org/x/crypto/openpgp
 golang.org/x/crypto/ssh
 golang.org/x/crypto/bcrypt
@@ -213,7 +213,7 @@ golang.org/x/net/http2
 golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/http/httpguts
-# golang.org/x/sys v0.0.0-20181221143128-b4a75ba826a6
+# golang.org/x/sys v0.0.0-20190213121743-983097b1a8a3
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.0
 golang.org/x/text/unicode/norm
@@ -256,3 +256,5 @@ google.golang.org/grpc/credentials/internal
 google.golang.org/grpc/balancer/base
 google.golang.org/grpc/binarylog/grpc_binarylog_v1
 google.golang.org/grpc/internal/syscall
+# gopkg.in/goracle.v2 v2.12.1
+gopkg.in/goracle.v2

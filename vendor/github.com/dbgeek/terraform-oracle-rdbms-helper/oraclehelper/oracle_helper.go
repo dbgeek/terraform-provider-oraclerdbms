@@ -6,8 +6,8 @@ import (
 	"log"
 
 	"github.com/hashicorp/go-version"
-	//oci8 need for the Oracle OCI connections
-	_ "github.com/mattn/go-oci8"
+	//goracle package as driver for Oracle
+	_ "gopkg.in/goracle.v2"
 )
 
 type (
@@ -50,7 +50,7 @@ func NewClient(cfg Cfg) *Client {
 	var db *sql.DB
 	var dBVersion string
 	if cfg.DbHost == "" && cfg.DbPort == "" {
-		db, err = sql.Open("oci8", fmt.Sprintf("%s/%s@%s", cfg.Username, cfg.Password, cfg.DbService))
+		db, err = sql.Open("goracle", fmt.Sprintf("%s/%s@%s", cfg.Username, cfg.Password, cfg.DbService))
 		if err != nil {
 			log.Fatal(err)
 
@@ -58,7 +58,7 @@ func NewClient(cfg Cfg) *Client {
 	} else {
 		//user/name@host:port/sid
 		log.Printf("[DEBUG] dbhost connection string, username: %s, password: %s, dbhost: %s, dbport: %s, dbservice: %s \n", cfg.Username, cfg.Password, cfg.DbHost, cfg.DbPort, cfg.DbService)
-		db, err = sql.Open("oci8", fmt.Sprintf("%s/%s@%s:%s/%s", cfg.Username, cfg.Password, cfg.DbHost, cfg.DbPort, cfg.DbService))
+		db, err = sql.Open("goracle", fmt.Sprintf("%s/%s@%s:%s/%s", cfg.Username, cfg.Password, cfg.DbHost, cfg.DbPort, cfg.DbService))
 
 		log.Printf("[DEBUG] connection str %s", fmt.Sprintf("%s/%s@%s:%s/%s", cfg.Username, cfg.Password, cfg.DbHost, cfg.DbPort, cfg.DbService))
 
