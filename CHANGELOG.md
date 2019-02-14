@@ -5,6 +5,7 @@
 * Bumping terraform-oracle-rdbms-helper to v0.3.1
 * Add resource oraclerdbms_block_change_tracking.
   * Does not support OMF.
+* Switch to go mod
 
 ## 0.3.1 (December, 08, 2018)
 
