@@ -1,8 +1,9 @@
 package oraclerdbms
 
 import (
-	"github.com/hashicorp/terraform/helper/resource"
 	"testing"
+
+	"github.com/hashicorp/terraform/helper/resource"
 )
 
 var (
@@ -27,6 +28,6 @@ func TestAccAutotask(t *testing.T) {
 const testAccGAutotaskConfigBasic = `
 resource "oraclerdbms_autotask" "autotask" {
 	client_name = "sql tuning advisor"
-	status = "TRUE"
+	status = true
 }
 `
