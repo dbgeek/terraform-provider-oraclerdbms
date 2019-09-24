@@ -56,7 +56,7 @@ resource "oraclerdbms_user" "test" {
 	username = "USER666"
 	default_tablespace = "USERS"
 	account_status = "OPEN"
-	quota {
+	quota = {
 		SYSTEM = "10M"
 	}
 }
@@ -66,7 +66,7 @@ resource "oraclerdbms_user" "test" {
 	username = "USER666"
 	default_tablespace = "SYSTEM"
 	account_status = "LOCKED"
-	quota {
+	quota = {
 		SYSTEM = "10M"
 	}
 }

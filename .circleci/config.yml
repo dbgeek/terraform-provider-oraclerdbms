@@ -3,7 +3,7 @@ version: 2
 jobs:
     checkout_code:
         docker:
-            - image: ba78/golang-oracle:0.0.4
+            - image: ba78/golang-oracle:0.0.5
         steps:
             - checkout:
                 path:  /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
@@ -21,7 +21,7 @@ jobs:
                     - /go/src/github.com/dbgeek
     build_terraform_provider_oraclerdbms:
         docker:
-            - image: ba78/golang-oracle:0.0.4
+            - image: ba78/golang-oracle:0.0.5
         working_directory: /go/src/github.com/dbgeek/terraform-provider-oraclerdbms
         environment:
             GO111MODULE: "on"
@@ -64,13 +64,13 @@ jobs:
                     - /home/circleci/artifacts/oracle
     build-oracle-image:
         docker:
-            - image: ba78/golang-oracle:0.0.4
+            - image: ba78/golang-oracle:0.0.5
         working_directory: /go/src/github.com/dbgeek/terraform-provider-oraclerdbms/docker
         environment:
-            TERRAFORM_VERSION: 0.11.8
+            TERRAFORM_VERSION: 0.12.9
             GO_VERSION: 1.11.1
             ORACLE_INSTANT_CLIENT: 12.2.0.1.0
-            TERRAFORM_PROVIDER_ORACLERDBMS: 0.3.1
+            TERRAFORM_PROVIDER_ORACLERDBMS: 0.4.0
             GO111MODULE: "on"
         steps:
             - restore_cache:
@@ -79,7 +79,7 @@ jobs:
                 key: v1-go-bin-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - setup_remote_docker:
                 docker_layer_caching: true
-            - run: 
+            - run:
                 name: Loging to docker hub
                 command: |
                     docker login -u $DOCKER_USER -p $DOCKER_PASS
@@ -97,13 +97,13 @@ jobs:
                     docker push ba78/terraform-provider-oraclerdbms:"${TERRAFORM_PROVIDER_ORACLERDBMS}"
     push-provider-binary:
         docker:
-            - image: ba78/golang-oracle:0.0.4
+            - image: ba78/golang-oracle:0.0.5
         working_directory: /go/bin
         environment:
-            TERRAFORM_VERSION: 0.11.8
+            TERRAFORM_VERSION: 0.12.9
             GO_VERSION: 1.11.1
             ORACLE_INSTANT_CLIENT: 12.2.0.1.0
-            TERRAFORM_PROVIDER_ORACLERDBMS: 0.3.2
+            TERRAFORM_PROVIDER_ORACLERDBMS: 0.4.0
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
