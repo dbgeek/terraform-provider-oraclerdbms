@@ -70,7 +70,7 @@ jobs:
             TERRAFORM_VERSION: 0.12.9
             GO_VERSION: 1.11.1
             ORACLE_INSTANT_CLIENT: 12.2.0.1.0
-            TERRAFORM_PROVIDER_ORACLERDBMS: 0.4.0
+            TERRAFORM_PROVIDER_ORACLERDBMS: 0.5.0
             GO111MODULE: "on"
         steps:
             - restore_cache:
@@ -103,7 +103,7 @@ jobs:
             TERRAFORM_VERSION: 0.12.9
             GO_VERSION: 1.11.1
             ORACLE_INSTANT_CLIENT: 12.2.0.1.0
-            TERRAFORM_PROVIDER_ORACLERDBMS: 0.4.0
+            TERRAFORM_PROVIDER_ORACLERDBMS: 0.5.0
         steps:
             - restore_cache:
                 key: v1-repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
@@ -113,7 +113,7 @@ jobs:
                 name: create scha256sum file
                 command: |
                     sha256sum terraform-provider-oraclerdbms > terraform-provider-oraclerdbms_v${TERRAFORM_PROVIDER_ORACLERDBMS}.sha256
-            - run: 
+            - run:
                 name: login to gcloud
                 command: |
                     echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
