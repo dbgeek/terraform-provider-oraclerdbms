@@ -1,5 +1,9 @@
 # Terraform oraclerdbms provider changelog
 
+## 0.5.0 (September 27, 2019)
+
+* As of September 2019, Terraform provider developers importing the Go module github.com/hashicorp/terraform, known as Terraform Core, should switch to github.com/hashicorp/terraform-plugin-sdk, the Terraform Plugin SDK, instead.
+
 ## 0.4.0 (September 24, 2019)
 
 * Adding support for terraform 0.12

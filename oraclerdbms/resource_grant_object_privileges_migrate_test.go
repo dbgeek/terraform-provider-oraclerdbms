@@ -3,7 +3,7 @@ package oraclerdbms
 import (
 	"testing"
 
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
 func TestGrantObjectPrivilegeMigrateState(t *testing.T) {
