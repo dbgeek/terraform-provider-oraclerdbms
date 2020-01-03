@@ -83,6 +83,8 @@ github.com/dbgeek/terraform-oracle-rdbms-helper v0.3.2 h1:LFbyV1+FU6e44nkaDT3uss
 github.com/dbgeek/terraform-oracle-rdbms-helper v0.3.2/go.mod h1:p+bHc84zBdG944yn3TDEpno5RbiKD17SlThDJzZZpaI=
 github.com/dbgeek/terraform-oracle-rdbms-helper v0.4.1 h1:j1ab6UMBjE7rqqPTWFY6ljBOOKvX1hjMrr+FLvV7OYg=
 github.com/dbgeek/terraform-oracle-rdbms-helper v0.4.1/go.mod h1:B3MFzMU9JkeVBwKXVXQEqDIjiXqnnEebw7eAlK+gP8E=
+github.com/dbgeek/terraform-oracle-rdbms-helper v0.4.2 h1:55a6zq0LoxPAi3fMs8yoKj/CXvL9dCC4DlhXUs9S2FM=
+github.com/dbgeek/terraform-oracle-rdbms-helper v0.4.2/go.mod h1:B3MFzMU9JkeVBwKXVXQEqDIjiXqnnEebw7eAlK+gP8E=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dimchansky/utfbom v1.0.0/go.mod h1:rO41eb7gLfo8SF1jd9F8HplJm1Fewwi4mQvIirEdv+8=
 github.com/dnaeon/go-vcr v0.0.0-20180920040454-5637cf3d8a31/go.mod h1:aBB1+wY4s93YsC3HHjMBMrwTj2R9FHDzUr9KyGc8n1E=
