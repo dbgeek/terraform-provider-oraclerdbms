@@ -104,7 +104,10 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 		config.DbService = d.Get("service").(string)
 	}
 
-	client := oraclehelper.NewClient(config)
+	client, err := oraclehelper.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Println("[DEBUG] Initializing Oracle DB Helper client")
 	return &oracleHelperType{
