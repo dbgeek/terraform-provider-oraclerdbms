@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# shellcheck disable=SC1091
+source image.env
+
+docker build --build-arg TF_VERSION="${TF_VERSION}" \
+  --build-arg TERRAFORM_PROVIDER_ORACLERDBMS="${TERRAFORM_PROVIDER_ORACLERDBMS}" \
+  -t tf-oraclerdbms:"${VERSION}" .
